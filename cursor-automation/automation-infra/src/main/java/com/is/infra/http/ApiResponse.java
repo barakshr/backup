@@ -16,11 +16,13 @@ public class ApiResponse {
     private final Response rawResponse;
     private final int statusCode;
     private final String body;
+    private final ApiAssert apiAssert;
 
     public ApiResponse(Response response) {
         this.rawResponse = response;
         this.statusCode = response.getStatusCode();
         this.body = response.getBody().asString();
+        this.apiAssert = new ApiAssert(this, response);
     }
 
     /**
@@ -41,26 +43,15 @@ public class ApiResponse {
         }
     }
 
+
+    public Response getRawResponse() {
+        return rawResponse;
+    }
     /**
      * Returns the value of a specific response header.
      */
-    public String header(String name) {
+    public String getHeader(String name) {
         return rawResponse.getHeader(name);
     }
 
-    /**
-     * Asserts the expected status code, throwing ApiException if it does not match.
-     *
-     * @param expected expected HTTP status code
-     * @return this, for chaining
-     */
-    public ApiResponse assertStatusCode(int expected) {
-        if (statusCode != expected) {
-            throw new ApiException(
-                    "ASSERT", "response", statusCode,
-                    "Expected status " + expected + " but got " + statusCode + ". Body: " + body
-            );
-        }
-        return this;
-    }
 }

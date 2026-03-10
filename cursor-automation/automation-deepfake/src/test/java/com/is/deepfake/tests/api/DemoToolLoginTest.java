@@ -25,7 +25,7 @@ public class DemoToolLoginTest extends BaseDeepfakeApiTest {
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
         // Authentication is handled automatically by CookieAuthProvider
-        // on the first request — no explicit login call needed.
+        // on the first request — no explicit login סcall needed.
         ApiResponse response = demoToolClient.getCallStatus();
 
         assertThat(response.getStatusCode())

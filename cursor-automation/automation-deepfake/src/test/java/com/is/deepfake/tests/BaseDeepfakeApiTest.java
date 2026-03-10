@@ -2,6 +2,7 @@ package com.is.deepfake.tests;
 
 import com.is.deepfake.clients.DemoToolClient;
 import com.is.deepfake.config.DeepfakeConfig;
+import com.is.infra.http.ApiException;
 import com.is.infra.testng.BaseApiTest;
 
 import java.beans.Transient;
@@ -27,6 +28,5 @@ public class BaseDeepfakeApiTest extends BaseApiTest {
         demoToolClient = new DemoToolClient(deepfakeConfig);
     }
 
-    @Test
-    public void testDemoToolLogin() {}
+
 }
