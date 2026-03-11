@@ -1,0 +1,14 @@
+automation:
+
+  # Global HTTP config — overrides defaults in HttpClientProperties
+  http:
+    read-timeout: 60
+    connection-timeout: 30
+    retry-max-attempts: 3
+    log-requests: true
+
+  # DemoTool service — owned by the deepfake module
+  demo-tool:
+    base-url: ${DEMO_TOOL_BASE_URL:https://demo-default.ironscales.com}
+    username: ${DEMO_TOOL_USERNAME:}
+    password: ${DEMO_TOOL_PASSWORD:}

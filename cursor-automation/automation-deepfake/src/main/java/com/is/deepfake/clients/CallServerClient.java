@@ -1,9 +1,7 @@
 package com.is.deepfake.clients;
 
-import com.is.deepfake.config.DeepfakeConfig;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.http.BaseApiClient;
-import com.is.infra.http.BearerTokenAuthProvider;
 
 /**
  * Client for the IronScales Call Server API.
@@ -19,16 +17,16 @@ import com.is.infra.http.BearerTokenAuthProvider;
  * - Notification triggers to the Notification Bot
  *
  * Auth: TBD (likely Bearer token or internal service auth)
+ * TODO: convert to @Component with CallServerProperties when service tests are added
  */
 public class CallServerClient extends BaseApiClient {
 
-    public CallServerClient(DeepfakeConfig config) {
-        super(config.getCallServerBaseUrl(), null);
+    public CallServerClient(String baseUrl) {
+        super(baseUrl, null);
     }
 
     /**
      * Sends participant metadata to the Call Server.
-     * Used in CS service tests to simulate Recording Bot input.
      * TODO: implement when CS endpoint spec is available.
      */
     public ApiResponse sendParticipantData(Object participantData) {

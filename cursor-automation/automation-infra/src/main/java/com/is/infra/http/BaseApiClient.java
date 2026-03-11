@@ -1,6 +1,8 @@
 package com.is.infra.http;
 
 import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.response.Response;
@@ -23,10 +25,24 @@ public abstract class BaseApiClient {
 
     private final String baseUrl;
     private final AuthProvider authProvider;
+    private final HttpClientProperties httpProps;
 
-    protected BaseApiClient(String baseUrl, AuthProvider authProvider) {
+    /**
+     * Primary constructor used by Spring-managed clients.
+     * Accepts injected HttpClientProperties for timeouts and logging config.
+     */
+    protected BaseApiClient(String baseUrl, AuthProvider authProvider, HttpClientProperties httpProps) {
         this.baseUrl = baseUrl;
         this.authProvider = authProvider;
+        this.httpProps = httpProps;
+    }
+
+    /**
+     * Backward-compatible constructor for non-Spring stub clients.
+     * Uses default HttpClientProperties values.
+     */
+    protected BaseApiClient(String baseUrl, AuthProvider authProvider) {
+        this(baseUrl, authProvider, new HttpClientProperties());
     }
 
     /**
@@ -37,8 +53,12 @@ public abstract class BaseApiClient {
         RequestSpecification spec = RestAssured
                 .given()
                 .baseUri(baseUrl)
-                .filter(new RequestLoggingFilter())
+                .config(restAssuredConfig());
+
+        if (httpProps.isLogRequests()) {
+            spec.filter(new RequestLoggingFilter())
                 .filter(new ResponseLoggingFilter());
+        }
 
         if (authProvider != null) {
             authProvider.applyAuth(spec);
@@ -51,11 +71,24 @@ public abstract class BaseApiClient {
      * Builds a request without auth. Used for public endpoints (e.g. health check, login).
      */
     protected RequestSpecification unauthenticatedRequest() {
-        return RestAssured
+        RequestSpecification spec = RestAssured
                 .given()
                 .baseUri(baseUrl)
-                .filter(new RequestLoggingFilter())
+                .config(restAssuredConfig());
+
+        if (httpProps.isLogRequests()) {
+            spec.filter(new RequestLoggingFilter())
                 .filter(new ResponseLoggingFilter());
+        }
+
+        return spec;
+    }
+
+    private RestAssuredConfig restAssuredConfig() {
+        return RestAssured.config()
+                .httpClient(HttpClientConfig.httpClientConfig()
+                        .setParam("http.socket.timeout", httpProps.getReadTimeout() * 1000)
+                        .setParam("http.connection.timeout", httpProps.getConnectionTimeout() * 1000));
     }
 
     protected ApiResponse get(String path) {

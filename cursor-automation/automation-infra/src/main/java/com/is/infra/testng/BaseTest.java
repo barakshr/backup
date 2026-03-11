@@ -1,33 +1,29 @@
 package com.is.infra.testng;
 
-import com.is.infra.config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 
 /**
  * Root base class for all tests across all modules.
- * Handles global lifecycle: config loading, suite-level setup and teardown.
+ * Integrates Spring context management via AbstractTestNGSpringContextTests.
  *
- * All test base classes extend this:
- *   BaseApiTest extends BaseTest
- *   BaseUiTest extends BaseTest
+ * The @SpringBootTest annotation and application class are declared in each
+ * product module's base test (e.g. DeepfakeBaseTest), keeping infra decoupled
+ * from product-specific Spring configurations.
+ *
+ * Hierarchy:
+ *   BaseTest (infra)
+ *     └── BaseApiTest (infra)
+ *           └── DeepfakeBaseTest (deepfake) ← @SpringBootTest lives here
+ *                 └── DemoToolLoginTest (deepfake)
  */
 @Listeners({TestListener.class})
-public class BaseTest {
+public abstract class BaseTest extends AbstractTestNGSpringContextTests {
 
     private static final Logger log = LoggerFactory.getLogger(BaseTest.class);
-
-    protected static ConfigManager config;
-
-    @BeforeSuite(alwaysRun = true)
-    public void globalSetup() {
-        log.info("=== Suite starting ===");
-        config = ConfigManager.load();
-        log.info("Config loaded. Environment: {}", config.getString("environment", "not set"));
-    }
 
     @AfterSuite(alwaysRun = true)
     public void globalTeardown() {

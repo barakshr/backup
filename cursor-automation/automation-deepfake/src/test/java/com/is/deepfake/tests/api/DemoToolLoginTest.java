@@ -1,31 +1,31 @@
 package com.is.deepfake.tests.api;
 
-import com.is.deepfake.tests.BaseDeepfakeApiTest;
+import com.is.deepfake.clients.DemoToolClient;
+import com.is.deepfake.tests.DeepfakeBaseTest;
 import com.is.infra.http.ApiResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Smoke test for the DemoTool API.
+ * Smoke tests for the DemoTool API.
  *
- * Test flow:
- *   1. POST /auth/login — authenticate with username + password (form-urlencoded)
- *   2. Capture JWT from Set-Cookie header on the 303 redirect response
- *   3. GET /calls/status — send request with the captured cookie
- *   4. Assert HTTP 200 and a valid response structure
+ * Auth flow (handled automatically by CookieAuthProvider):
+ *   1. POST /auth/login with form credentials
+ *   2. Capture JWT from Set-Cookie on the 303 redirect
+ *   3. Attach cookie to all subsequent requests
  *
- * Prerequisites (set as env vars or in config.properties):
- *   demo.tool.base.url  → DEMO_TOOL_BASE_URL
- *   demo.tool.username  → DEMO_TOOL_USERNAME
- *   demo.tool.password  → DEMO_TOOL_PASSWORD
+ * Credentials are loaded from application.yml or environment variables:
+ *   DEMO_TOOL_BASE_URL, DEMO_TOOL_USERNAME, DEMO_TOOL_PASSWORD
  */
-public class DemoToolLoginTest extends BaseDeepfakeApiTest {
+public class DemoToolLoginTest extends DeepfakeBaseTest {
+
+    @Autowired
+    private DemoToolClient demoToolClient;
 
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
-        // Authentication is handled automatically by CookieAuthProvider
-        // on the first request — no explicit login סcall needed.
         ApiResponse response = demoToolClient.getCallStatus();
 
         assertThat(response.getStatusCode())
