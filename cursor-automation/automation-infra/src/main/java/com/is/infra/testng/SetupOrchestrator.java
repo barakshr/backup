@@ -1,5 +1,6 @@
 package com.is.infra.testng;
 
+import com.is.infra.selenium.DriverHolder;
 import com.is.infra.testng.setup.SetupAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +18,7 @@ import java.util.List;
  * implementations in order before the test, and in reverse order after.
  *
  * This class is product-agnostic: it only calls SetupAction.appliesTo() / setup() /
- * teardown(). It has no knowledge of @TestSetup, @DeepfakeSetup, or any context holder.
- * Each action is responsible for managing its own layer's context holder.
+ * teardown(). After all action teardowns, quits and clears the driver (DriverHolder).
  *
  * Teardown is wrapped in try/catch per action so one failure does not skip the rest.
  */
@@ -57,5 +57,7 @@ public class SetupOrchestrator implements IInvokedMethodListener {
                 }
             }
         }
+
+        DriverHolder.quitAndClear();
     }
 }

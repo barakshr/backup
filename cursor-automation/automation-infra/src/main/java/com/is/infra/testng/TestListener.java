@@ -1,6 +1,7 @@
 package com.is.infra.testng;
 
 import com.is.infra.reporting.AllureHelper;
+import com.is.infra.selenium.DriverHolder;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -11,17 +12,7 @@ import org.testng.ITestResult;
 
 /**
  * Cross-cutting test lifecycle observer.
- *
- * Responsibilities:
- *   - Log test start, pass, fail, skip.
- *   - On failure: attach a screenshot to Allure if a browser was open.
- *
- * Does NOT handle setup or teardown — that is SetupOrchestrator's responsibility.
- * Does NOT generate the final report — that is SuiteListener / Allure Maven plugin.
- *
- * Screenshot capture reads from TestContextHolder: the driver is only accessed
- * if it was already created (hasDriver() guard), so tests that never touched
- * the browser do not incur any overhead.
+ * On failure: attach a screenshot to Allure if a driver was used (DriverHolder).
  */
 public class TestListener implements ITestListener {
 
@@ -52,10 +43,9 @@ public class TestListener implements ITestListener {
 
     private void attachScreenshotIfAvailable(ITestResult result) {
         try {
-            TestContext ctx = TestContextHolder.get();
-            if (ctx == null || !ctx.hasDriver()) return;
+            if (!DriverHolder.hasDriver()) return;
 
-            WebDriver driver = ctx.getDriver();
+            WebDriver driver = DriverHolder.getDriver();
             if (driver instanceof TakesScreenshot ts) {
                 byte[] screenshot = ts.getScreenshotAs(OutputType.BYTES);
                 AllureHelper.attachScreenshot("Failure screenshot — " + result.getName(), screenshot);

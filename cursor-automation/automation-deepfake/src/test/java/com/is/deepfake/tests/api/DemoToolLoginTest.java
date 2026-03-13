@@ -1,8 +1,6 @@
 package com.is.deepfake.tests.api;
 
-import com.is.common.testng.CommonContextHolder;
 import com.is.deepfake.clients.DemoToolClient;
-import com.is.deepfake.testng.DeepfakeContextHolder;
 import com.is.deepfake.testng.annotation.DeepfakeSetup;
 import com.is.deepfake.tests.DeepfakeBaseTest;
 import com.is.infra.http.ApiResponse;
@@ -28,13 +26,10 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @Autowired
     private DemoToolClient demoToolClient;
 
-    @TestSetup(createCompany = true, requiresBrowser = true)
+    @TestSetup(createCompany = true)
     @DeepfakeSetup(createDfsTenant = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
-
-  
-
         ApiResponse response = demoToolClient.getCallStatus();
 
         assertThat(response.getStatusCode())

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
  * Contract for all pre-test setup and post-test teardown actions.
  *
  * Each implementation handles exactly one concern (browser, company, DFS tenant, etc.)
- * and owns its own layer's context holder (TestContextHolder, CommonContextHolder, etc.).
+ * and owns its own layer's context holder (CommonContextHolder, DeepfakeContextHolder, etc.).
  * Actions are registered in SetupActionRegistry and executed by SetupOrchestrator.
  *
  * Key design decisions:

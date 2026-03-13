@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * automation-deepfake that reads this annotation.
  *
  * Example:
- *   @TestSetup(createCompany = true, requiresBrowser = true)
+ *   @TestSetup(createCompany = true)
  *   @DeepfakeSetup(createDfsTenant = true)
  *   @Test
  *   public void shouldDetectDeepfakeInMeeting() {

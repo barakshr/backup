@@ -16,8 +16,11 @@ import java.lang.annotation.Target;
  *   - Only cross-cutting, product-agnostic fields belong here.
  *     Product-specific fields live in product annotations (e.g. @DeepfakeSetup).
  *
+ * Browser/driver is not declared here — it is created lazily when a Page Object
+ * is first used and closed after every test by SetupOrchestrator.
+ *
  * Example:
- *   @TestSetup(createCompany = true, requiresBrowser = true)
+ *   @TestSetup(createCompany = true)
  *   @Test
  *   public void shouldDetectDeepfake() { ... }
  */
@@ -27,9 +30,6 @@ public @interface TestSetup {
 
     /** Create a test company via AutomationApiClient before the test. Deleted after. */
     boolean createCompany() default false;
-
-    /** Register browser intent. Driver is created lazily when first Page Object is constructed. */
-    boolean requiresBrowser() default false;
 
     /** Execute database cleanup via AutomationApiClient before the test. */
     boolean cleanDatabase() default false;

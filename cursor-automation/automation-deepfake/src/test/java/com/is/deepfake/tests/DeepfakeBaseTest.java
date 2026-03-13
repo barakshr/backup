@@ -2,7 +2,7 @@ package com.is.deepfake.tests;
 
 import com.is.deepfake.DeepfakeTestApplication;
 import com.is.deepfake.testng.setup.CreateDfsTenantAction;
-import com.is.infra.testng.BaseApiTest;
+import com.is.infra.testng.BaseTest;
 import com.is.infra.testng.SetupActionRegistry;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testng.annotations.BeforeSuite;
@@ -17,7 +17,7 @@ import org.testng.annotations.BeforeSuite;
  * Deepfake-specific SetupActions are registered in @BeforeSuite below.
  */
 @SpringBootTest(classes = DeepfakeTestApplication.class)
-public abstract class DeepfakeBaseTest extends BaseApiTest {
+public abstract class DeepfakeBaseTest extends BaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void registerDeepfakeActions() {

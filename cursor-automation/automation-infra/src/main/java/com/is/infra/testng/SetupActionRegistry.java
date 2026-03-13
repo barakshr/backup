@@ -14,7 +14,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Central registry of all SetupAction implementations across all modules.
  *
  * Registration happens in @BeforeSuite methods:
- *   - BaseTest registers infra actions (StartBrowserAction).
  *   - Product base tests register product-specific actions (CreateCompanyAction, etc.).
  *
  * Deduplicates by class: if a @BeforeSuite fires more than once due to TestNG

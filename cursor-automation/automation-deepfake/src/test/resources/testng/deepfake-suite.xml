@@ -7,4 +7,10 @@
         </classes>
     </test>
 
+    <test name="UI Tests">
+        <classes>
+            <class name="com.is.deepfake.tests.ui.LoginPageTest"/>
+        </classes>
+    </test>
+
 </suite>

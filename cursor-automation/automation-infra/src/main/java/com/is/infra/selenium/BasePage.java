@@ -1,45 +1,47 @@
 package com.is.infra.selenium;
 
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
 /**
  * Base class for all Page Objects.
- * Provides the WebDriver instance and common page interactions.
- * Stub — to be implemented when UI tests are added.
+ * Driver is obtained lazily from DriverHolder — first use of a Page Object starts the browser.
  *
  * All product page classes extend this:
- *   class DeepFakeMeetingsPage extends BasePage { ... }
+ *   class LoginPage extends BasePage { ... }
  */
 public abstract class BasePage {
 
-    protected final WebDriver driver;
-
-    protected BasePage(WebDriver driver) {
-        this.driver = driver;
+    /**
+     * Returns the WebDriver for the current thread, creating it on first call (reads config).
+     */
+    protected WebDriver getDriver() {
+        return DriverHolder.getDriver();
     }
 
     /**
      * Navigates the browser to the given URL.
      */
     public void navigateTo(String url) {
-        // TODO: implement
-        throw new UnsupportedOperationException("BasePage.navigateTo() not yet implemented");
+        getDriver().get(url);
     }
 
     /**
      * Returns the current page title.
      */
     public String getTitle() {
-        // TODO: implement
-        throw new UnsupportedOperationException("BasePage.getTitle() not yet implemented");
+        return getDriver().getTitle();
     }
 
     /**
-     * Takes a screenshot and returns the bytes.
-     * Called by TestListener on test failure.
+     * Takes a screenshot. Used by TestListener on test failure.
      */
     public byte[] takeScreenshot() {
-        // TODO: implement using TakesScreenshot
-        throw new UnsupportedOperationException("BasePage.takeScreenshot() not yet implemented");
+        WebDriver driver = getDriver();
+        if (driver instanceof TakesScreenshot ts) {
+            return ts.getScreenshotAs(OutputType.BYTES);
+        }
+        return new byte[0];
     }
 }

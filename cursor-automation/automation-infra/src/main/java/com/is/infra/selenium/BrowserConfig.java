@@ -7,12 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * Overrides the browser selection for a specific test method or class.
- *
  * If absent, the browser is resolved from config.properties (browser.type / browser.headless).
- * Only meaningful when @TestSetup(requiresBrowser = true) is also present.
+ * Driver is created lazily when first needed (e.g. first Page Object use).
  *
  * Example — force Firefox for a specific test:
- *   @TestSetup(requiresBrowser = true)
  *   @BrowserConfig(type = BrowserType.FIREFOX, headless = false)
  *   @Test
  *   public void shouldRenderCorrectlyInFirefox() { ... }
