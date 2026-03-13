@@ -1,12 +1,11 @@
 package com.is.deepfake.tests.api;
 
+import com.is.common.testng.CommonContextHolder;
 import com.is.deepfake.clients.DemoToolClient;
+import com.is.deepfake.testng.DeepfakeContextHolder;
 import com.is.deepfake.testng.annotation.DeepfakeSetup;
-import com.is.deepfake.testng.setup.CreateDfsTenantAction;
 import com.is.deepfake.tests.DeepfakeBaseTest;
 import com.is.infra.http.ApiResponse;
-import com.is.infra.testng.TestContext;
-import com.is.infra.testng.TestContextHolder;
 import com.is.infra.testng.annotation.TestSetup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
@@ -33,9 +32,11 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @DeepfakeSetup(createDfsTenant = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
+        // Example: typed access to per-layer contexts — no string keys, no casts
+        // CompanyDto company = CommonContextHolder.get().getCompany();
+        // Object     tenant  = DeepfakeContextHolder.get().getDfsTenant();
+
         ApiResponse response = demoToolClient.getCallStatus();
-       TestContextHolder.get().hasExtra(CreateDfsTenantAction.EXTRA_DFS_TENANT);
-       TestContextHolder.get().getCompany();
 
         assertThat(response.getStatusCode())
                 .as("GET /calls/status should return 200 after successful login")

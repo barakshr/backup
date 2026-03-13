@@ -19,8 +19,8 @@ import java.lang.annotation.Target;
  *   @DeepfakeSetup(createDfsTenant = true)
  *   @Test
  *   public void shouldDetectDeepfakeInMeeting() {
- *       Company  company = (CompanyDto) TestContextHolder.get().getCompany();
- *       DfsTenant tenant = (DfsTenant) TestContextHolder.get().getExtra(com.is.deepfake.testng.setup.CreateDfsTenantAction.EXTRA_DFS_TENANT);
+ *       CompanyDto company = CommonContextHolder.get().getCompany();
+ *       Object     tenant  = DeepfakeContextHolder.get().getDfsTenant();
  *   }
  */
 @Retention(RetentionPolicy.RUNTIME)

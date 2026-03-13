@@ -1,8 +1,9 @@
 package com.is.common.testng.setup;
 
 import com.is.common.dto.CompanyDto;
+import com.is.common.testng.CommonContextHolder;
+import com.is.common.testng.CommonTestContext;
 import com.is.common.workflows.CompanySetupWorkflow;
-import com.is.infra.testng.TestContext;
 import com.is.infra.testng.annotation.TestSetup;
 import com.is.infra.testng.setup.AbstractSetupAction;
 import org.slf4j.Logger;
@@ -14,13 +15,12 @@ import java.lang.reflect.Method;
  * Creates a test company before the test and deletes it after.
  * Activated when @TestSetup(createCompany=true) is present on the test method or class.
  *
- * Company is stored in TestContext as Object (infra is product-agnostic).
- * Retrieve it in tests via:
- *   CompanyDto company = (CompanyDto) TestContextHolder.get().getCompany();
+ * Company is stored in CommonContextHolder (ThreadLocal), typed as CompanyDto.
+ * Retrieve in tests via:
+ *   CompanyDto company = CommonContextHolder.get().getCompany();
  *
  * Registration:
- *   Each product base test registers this action in @BeforeSuite alongside
- *   its own AutomationApiClient / CompanySetupWorkflow dependency:
+ *   Product base tests register this action in @BeforeSuite:
  *
  *   @Autowired private CompanySetupWorkflow companyWorkflow;
  *
@@ -49,17 +49,19 @@ public class CreateCompanyAction extends AbstractSetupAction {
     }
 
     @Override
-    public void setup(TestContext.Builder builder, Method method) {
+    public void setup(Method method) {
         log.info("Creating company for test: {}", method.getName());
         CompanyDto company = companyWorkflow.create().build();
-        builder.withCompany(company);
+        CommonContextHolder.set(new CommonTestContext(company));
     }
 
     @Override
-    public void teardown(TestContext ctx) {
-        if (ctx.getCompany() instanceof CompanyDto company) {
-            log.info("Deleting company: {}", company.getCompanyId());
-            companyWorkflow.delete(company);
+    public void teardown() {
+        CommonTestContext ctx = CommonContextHolder.get();
+        if (ctx != null && ctx.getCompany() != null) {
+            log.info("Deleting company: {}", ctx.getCompany().getCompanyId());
+            companyWorkflow.delete(ctx.getCompany());
+            CommonContextHolder.clear();
         }
     }
 }

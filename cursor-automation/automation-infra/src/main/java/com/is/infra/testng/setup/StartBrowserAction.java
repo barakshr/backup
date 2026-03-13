@@ -4,6 +4,7 @@ import com.is.infra.config.ConfigManager;
 import com.is.infra.selenium.BrowserConfig;
 import com.is.infra.selenium.BrowserType;
 import com.is.infra.testng.TestContext;
+import com.is.infra.testng.TestContextHolder;
 import com.is.infra.testng.annotation.TestSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 
 /**
- * Registers browser intent in TestContext when @TestSetup(requiresBrowser=true).
+ * Creates a TestContext with browser intent when @TestSetup(requiresBrowser=true).
  *
  * Does NOT open the browser — only records the browser type and headless flag.
  * The actual WebDriver is created lazily on the first call to TestContext.getDriver(),
@@ -22,7 +23,7 @@ import java.lang.reflect.Method;
  *   2. config.properties: browser.type / browser.headless
  *   3. Fallback: CHROME, headless=true
  *
- * Teardown: calls ctx.quitDriver() — no-op if the browser was never actually opened.
+ * Teardown: calls quitDriver() — no-op if the browser was never actually opened.
  */
 public class StartBrowserAction extends AbstractSetupAction {
 
@@ -41,16 +42,20 @@ public class StartBrowserAction extends AbstractSetupAction {
     }
 
     @Override
-    public void setup(TestContext.Builder builder, Method method) {
+    public void setup(Method method) {
         BrowserType type     = resolveBrowserType(method);
         boolean     headless = resolveHeadless(method);
         log.info("Browser intent registered: {} (headless={})", type, headless);
-        builder.withBrowser(type, headless);
+        TestContextHolder.set(new TestContext(type, headless));
     }
 
     @Override
-    public void teardown(TestContext ctx) {
-        ctx.quitDriver();
+    public void teardown() {
+        TestContext ctx = TestContextHolder.get();
+        if (ctx != null) {
+            ctx.quitDriver();
+            TestContextHolder.clear();
+        }
     }
 
     private BrowserType resolveBrowserType(Method method) {
