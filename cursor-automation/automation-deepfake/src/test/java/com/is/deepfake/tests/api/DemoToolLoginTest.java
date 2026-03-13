@@ -32,9 +32,8 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @DeepfakeSetup(createDfsTenant = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
-        // Example: typed access to per-layer contexts — no string keys, no casts
-        // CompanyDto company = CommonContextHolder.get().getCompany();
-        // Object     tenant  = DeepfakeContextHolder.get().getDfsTenant();
+
+  
 
         ApiResponse response = demoToolClient.getCallStatus();
 
