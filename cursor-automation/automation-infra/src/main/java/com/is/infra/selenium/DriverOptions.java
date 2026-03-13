@@ -1,41 +1,58 @@
 package com.is.infra.selenium;
 
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 /**
- * Builds browser configuration options.
- * Stub — to be implemented when UI tests are added.
+ * Builds browser configuration options for each supported browser.
+ *
+ * Headless options are CI-safe: no sandbox, shared memory workarounds, fixed viewport.
+ * Headed options are for local development and debugging.
  */
 public class DriverOptions {
 
     private DriverOptions() {}
 
-    /**
-     * Returns ChromeOptions configured for CI (headless, no sandbox, disable GPU).
-     * TODO: implement
-     */
     public static ChromeOptions headlessChrome() {
         ChromeOptions options = new ChromeOptions();
-        // TODO: add --headless, --no-sandbox, --disable-dev-shm-usage, etc.
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--disable-extensions");
         return options;
     }
 
-    /**
-     * Returns ChromeOptions for local development (headed).
-     * TODO: implement
-     */
     public static ChromeOptions headedChrome() {
-        return new ChromeOptions();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--window-size=1920,1080");
+        return options;
     }
 
-    /**
-     * Returns FirefoxOptions configured for CI.
-     * TODO: implement
-     */
     public static FirefoxOptions headlessFirefox() {
         FirefoxOptions options = new FirefoxOptions();
-        // TODO: add headless mode
+        options.addArguments("-headless");
+        options.addArguments("--width=1920");
+        options.addArguments("--height=1080");
         return options;
+    }
+
+    public static FirefoxOptions headedFirefox() {
+        return new FirefoxOptions();
+    }
+
+    public static EdgeOptions headlessEdge() {
+        EdgeOptions options = new EdgeOptions();
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--window-size=1920,1080");
+        return options;
+    }
+
+    public static EdgeOptions headedEdge() {
+        return new EdgeOptions();
     }
 }
