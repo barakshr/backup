@@ -1,4 +1,4 @@
-package com.is.deepfake.testng;
+package com.is.deepfake.testng.context;
 
 /**
  * Thread-local store for the current test's DeepfakeTestContext.

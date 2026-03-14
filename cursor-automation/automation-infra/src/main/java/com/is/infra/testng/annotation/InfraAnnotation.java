@@ -26,10 +26,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface TestSetup {
+public @interface InfraAnnotation {
 
-    /** Create a test company via AutomationApiClient before the test. Deleted after. */
-    boolean createCompany() default false;
+
 
     /** Execute database cleanup via AutomationApiClient before the test. */
     boolean cleanDatabase() default false;

@@ -1,4 +1,4 @@
-package com.is.infra.testng;
+package com.is.infra.testng.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

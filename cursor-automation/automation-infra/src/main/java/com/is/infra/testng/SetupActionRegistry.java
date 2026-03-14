@@ -1,8 +1,9 @@
 package com.is.infra.testng;
 
-import com.is.infra.testng.setup.SetupAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.is.infra.testng.action.Action;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,19 +27,19 @@ public class SetupActionRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(SetupActionRegistry.class);
 
-    private static final List<SetupAction> actions      = new CopyOnWriteArrayList<>();
+    private static final List<Action> actions      = new CopyOnWriteArrayList<>();
     private static final Set<Class<?>> registered   = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     private SetupActionRegistry() {}
 
-    public static void register(SetupAction action) {
+    public static void register(Action action) {
         if (registered.add(action.getClass())) {
             actions.add(action);
             log.info("Registered SetupAction: {}", action.getClass().getSimpleName());
         }
     }
 
-    public static List<SetupAction> getActions() {
+    public static List<Action> getActions() {
         return Collections.unmodifiableList(actions);
     }
 

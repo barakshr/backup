@@ -26,11 +26,8 @@ public class CompanySetupWorkflow {
 
     private static final Logger log = LoggerFactory.getLogger(CompanySetupWorkflow.class);
 
-    private final AutomationApiClient automationApiClient;
+    private final AutomationApiClient automationApiClient = new AutomationApiClient();
 
-    public CompanySetupWorkflow(AutomationApiClient automationApiClient) {
-        this.automationApiClient = automationApiClient;
-    }
 
     public Builder create() {
         return new Builder(automationApiClient);

@@ -1,9 +1,10 @@
-package com.is.deepfake.testng.setup;
+package com.is.deepfake.testng.action;
 
-import com.is.deepfake.testng.DeepfakeContextHolder;
-import com.is.deepfake.testng.DeepfakeTestContext;
-import com.is.deepfake.testng.annotation.DeepfakeSetup;
-import com.is.infra.testng.setup.AbstractSetupAction;
+import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
+import com.is.deepfake.testng.context.DeepfakeContextHolder;
+import com.is.deepfake.testng.context.DeepfakeTestContext;
+import com.is.infra.testng.action.AbstractAction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +20,13 @@ import java.lang.reflect.Method;
  *
  * TODO: inject DFS API client / workflow and implement real create/delete.
  */
-public class CreateDfsTenantAction extends AbstractSetupAction {
+public class CreateDfsTenantAction extends AbstractAction {
 
     private static final Logger log = LoggerFactory.getLogger(CreateDfsTenantAction.class);
 
     @Override
     public boolean appliesTo(Method method) {
-        DeepfakeSetup setup = getAnnotation(method, DeepfakeSetup.class);
+        DeepfakeAnnotation setup = getAnnotation(method, DeepfakeAnnotation.class);
         return setup != null && setup.createDfsTenant();
     }
 

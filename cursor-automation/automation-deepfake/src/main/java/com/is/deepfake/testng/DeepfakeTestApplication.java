@@ -1,4 +1,4 @@
-package com.is.deepfake;
+package com.is.deepfake.testng;
 
 import com.is.deepfake.config.DemoToolProperties;
 import com.is.infra.http.HttpClientProperties;

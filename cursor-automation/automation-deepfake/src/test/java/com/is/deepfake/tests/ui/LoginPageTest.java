@@ -1,7 +1,8 @@
 package com.is.deepfake.tests.ui;
 
 import com.is.common.pages.LoginPage;
-import com.is.deepfake.tests.DeepfakeBaseTest;
+import com.is.deepfake.testng.DeepfakeBaseTest;
+
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,4 +1,4 @@
-package com.is.infra.testng;
+package com.is.infra.testng.context;
 
 /**
  * Thread-local store for the current test's TestContext.

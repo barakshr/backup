@@ -1,4 +1,4 @@
-package com.is.infra.testng.setup;
+package com.is.infra.testng.action;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  *   TestSetup setup = getAnnotation(method, TestSetup.class);
  *   return setup != null && setup.createCompany();
  */
-public abstract class AbstractSetupAction implements SetupAction {
+public abstract class AbstractAction implements Action {
 
     /**
      * Resolves an annotation from the test method, falling back to its declaring class.

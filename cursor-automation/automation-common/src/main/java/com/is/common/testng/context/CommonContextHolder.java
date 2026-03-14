@@ -1,4 +1,4 @@
-package com.is.common.testng;
+package com.is.common.testng.context;
 
 /**
  * Thread-local store for the current test's CommonTestContext.

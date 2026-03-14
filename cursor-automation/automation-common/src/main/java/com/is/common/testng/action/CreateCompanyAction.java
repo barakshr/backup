@@ -1,11 +1,13 @@
-package com.is.common.testng.setup;
+package com.is.common.testng.action;
 
 import com.is.common.dto.CompanyDto;
-import com.is.common.testng.CommonContextHolder;
-import com.is.common.testng.CommonTestContext;
+import com.is.common.testng.annotation.CommonAnnotation;
+import com.is.common.testng.context.CommonContextHolder;
+import com.is.common.testng.context.CommonTestContext;
 import com.is.common.workflows.CompanySetupWorkflow;
-import com.is.infra.testng.annotation.TestSetup;
-import com.is.infra.testng.setup.AbstractSetupAction;
+import com.is.infra.testng.action.AbstractAction;
+import com.is.infra.testng.annotation.InfraAnnotation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,19 +34,15 @@ import java.lang.reflect.Method;
  * Note: build() and delete() are stubs until AutomationApiClient is implemented.
  * See issuesBacklog.md for details.
  */
-public class CreateCompanyAction extends AbstractSetupAction {
+public class CreateCompanyAction extends AbstractAction {
 
     private static final Logger log = LoggerFactory.getLogger(CreateCompanyAction.class);
 
-    private final CompanySetupWorkflow companyWorkflow;
-
-    public CreateCompanyAction(CompanySetupWorkflow companyWorkflow) {
-        this.companyWorkflow = companyWorkflow;
-    }
+    private final CompanySetupWorkflow companyWorkflow = new CompanySetupWorkflow();
 
     @Override
     public boolean appliesTo(Method method) {
-        TestSetup setup = getAnnotation(method, TestSetup.class);
+        CommonAnnotation setup = getAnnotation(method, CommonAnnotation.class);
         return setup != null && setup.createCompany();
     }
 

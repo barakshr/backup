@@ -1,4 +1,4 @@
-package com.is.infra.testng.setup;
+package com.is.infra.testng.action;
 
 import java.lang.reflect.Method;
 
@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
  *
  * Extend AbstractSetupAction for a convenience getAnnotation() helper.
  */
-public interface SetupAction {
+public interface Action {
 
     /**
      * Returns true if this action should run for the given test method.

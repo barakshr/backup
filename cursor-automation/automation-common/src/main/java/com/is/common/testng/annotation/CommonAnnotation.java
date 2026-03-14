@@ -1,4 +1,4 @@
-package com.is.deepfake.testng.annotation;
+package com.is.common.testng.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -25,14 +25,11 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface DeepfakeSetup {
+public @interface CommonAnnotation {
 
     /** Create a DFS tenant and associate it with the test company before the test. Deleted after. */
-    boolean createDfsTenant() default false;
+    boolean createCompany() default false;
 
-    /** Join a Teams meeting as a deepfake participant before the test. */
-    boolean joinTeamsMeeting() default false;
 
-    /** Scenario name passed to the meeting setup (e.g. "with-deepfake", "no-deepfake"). */
-    String meetingScenario() default "";
+
 }

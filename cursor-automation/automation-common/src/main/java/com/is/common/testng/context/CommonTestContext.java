@@ -1,4 +1,4 @@
-package com.is.common.testng;
+package com.is.common.testng.context;
 
 import com.is.common.dto.CompanyDto;
 

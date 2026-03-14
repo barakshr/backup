@@ -1,7 +1,9 @@
-package com.is.infra.testng;
+package com.is.infra.testng.listeners;
 
 import com.is.infra.selenium.DriverHolder;
-import com.is.infra.testng.setup.SetupAction;
+import com.is.infra.testng.SetupActionRegistry;
+import com.is.infra.testng.action.Action;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.IInvokedMethod;
@@ -32,7 +34,7 @@ public class SetupOrchestrator implements IInvokedMethodListener {
 
         Method method = invokedMethod.getTestMethod().getConstructorOrMethod().getMethod();
 
-        for (SetupAction action : SetupActionRegistry.getActions()) {
+        for (Action action : SetupActionRegistry.getActions()) {
             if (action.appliesTo(method)) {
                 log.debug("Setup: {}", action.getClass().getSimpleName());
                 action.setup(method);
@@ -45,10 +47,10 @@ public class SetupOrchestrator implements IInvokedMethodListener {
         if (!invokedMethod.isTestMethod()) return;
 
         Method method = invokedMethod.getTestMethod().getConstructorOrMethod().getMethod();
-        List<SetupAction> reversed = new ArrayList<>(SetupActionRegistry.getActions());
+        List<Action> reversed = new ArrayList<>(SetupActionRegistry.getActions());
         Collections.reverse(reversed);
 
-        for (SetupAction action : reversed) {
+        for (Action action : reversed) {
             if (action.appliesTo(method)) {
                 try {
                     action.teardown();

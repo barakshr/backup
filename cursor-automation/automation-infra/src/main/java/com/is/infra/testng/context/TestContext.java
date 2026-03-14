@@ -1,4 +1,4 @@
-package com.is.infra.testng;
+package com.is.infra.testng.context;
 
 import com.is.infra.selenium.BrowserType;
 import com.is.infra.selenium.DriverFactory;

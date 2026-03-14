@@ -1,4 +1,4 @@
-package com.is.deepfake.testng;
+package com.is.deepfake.testng.context;
 
 /**
  * Holds deepfake-specific test resources for a single test method.
@@ -15,6 +15,7 @@ package com.is.deepfake.testng;
 public class DeepfakeTestContext {
 
     private final Object dfsTenant;
+   
 
     public DeepfakeTestContext(Object dfsTenant) {
         this.dfsTenant = dfsTenant;
@@ -22,5 +23,9 @@ public class DeepfakeTestContext {
 
     public Object getDfsTenant() {
         return dfsTenant;
+    }
+
+    public Object getMeeting() {
+        return meeting;
     }
 }

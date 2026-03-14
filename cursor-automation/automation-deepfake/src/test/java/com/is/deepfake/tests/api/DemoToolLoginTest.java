@@ -1,10 +1,13 @@
 package com.is.deepfake.tests.api;
 
+import com.is.common.testng.annotation.CommonAnnotation;
+import com.is.common.testng.context.CommonContextHolder;
 import com.is.deepfake.clients.DemoToolClient;
-import com.is.deepfake.testng.annotation.DeepfakeSetup;
-import com.is.deepfake.tests.DeepfakeBaseTest;
+import com.is.deepfake.testng.DeepfakeBaseTest;
+import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
+import com.is.deepfake.testng.context.DeepfakeContextHolder;
 import com.is.infra.http.ApiResponse;
-import com.is.infra.testng.annotation.TestSetup;
+import com.is.infra.testng.annotation.InfraAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
@@ -26,11 +29,16 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @Autowired
     private DemoToolClient demoToolClient;
 
-    @TestSetup(createCompany = true)
-    @DeepfakeSetup(createDfsTenant = true)
+    @InfraAnnotation(cleanDatabase   = true)
+    @CommonAnnotation(createCompany = true )
+    @DeepfakeAnnotation(createDfsTenant = true ,joinTeamsMeeting = true)
+  
+   
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
         ApiResponse response = demoToolClient.getCallStatus();
+        CommonContextHolder.get().getCompany();
+        DeepfakeContextHolder.get().getDfsTenant();
 
         assertThat(response.getStatusCode())
                 .as("GET /calls/status should return 200 after successful login")
