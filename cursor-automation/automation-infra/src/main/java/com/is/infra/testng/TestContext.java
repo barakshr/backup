@@ -25,42 +25,5 @@ public class TestContext {
 
     private static final Logger log = LoggerFactory.getLogger(TestContext.class);
 
-    private final BrowserType browserType;
-    private final boolean headless;
-    private final AtomicReference<WebDriver> driverRef = new AtomicReference<>();
 
-    public TestContext(BrowserType browserType, boolean headless) {
-        this.browserType = browserType;
-        this.headless    = headless;
-    }
-
-    /**
-     * Returns the WebDriver for this test, creating it lazily on first access.
-     * Returns null if no browser context was created (non-UI test).
-     * Thread-safe via AtomicReference.compareAndSet.
-     */
-    public WebDriver getDriver() {
-        if (browserType == null) return null;
-        if (driverRef.get() == null) {
-            WebDriver driver = DriverFactory.create(browserType, headless);
-            if (!driverRef.compareAndSet(null, driver)) {
-                driver.quit();
-            }
-        }
-        return driverRef.get();
-    }
-
-    /** Returns true if a WebDriver has been created (i.e. a Page Object was used). */
-    public boolean hasDriver() {
-        return driverRef.get() != null;
-    }
-
-    /** Quits the driver if it was opened. No-op if the test never used the browser. */
-    public void quitDriver() {
-        WebDriver driver = driverRef.getAndSet(null);
-        if (driver != null) {
-            log.info("Quitting browser");
-            DriverFactory.quit(driver);
-        }
-    }
 }
