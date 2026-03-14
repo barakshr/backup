@@ -2,8 +2,8 @@ package com.is.deepfake.testng;
 
 import com.is.common.testng.CommonBaseTest;
 import com.is.deepfake.testng.action.CreateDfsTenantAction;
-import com.is.infra.testng.BaseTest;
-import com.is.infra.testng.SetupActionRegistry;
+import com.is.deepfake.testng.action.JoinTeamsMeetingAction;
+import com.is.infra.testng.ActionRegistry;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testng.annotations.BeforeSuite;
 
@@ -21,6 +21,7 @@ public abstract class DeepfakeBaseTest extends CommonBaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void registerDeepfakeActions() {
-        SetupActionRegistry.register(new CreateDfsTenantAction());
+        ActionRegistry.register(new CreateDfsTenantAction());
+        ActionRegistry.register(new JoinTeamsMeetingAction());
     }
 }

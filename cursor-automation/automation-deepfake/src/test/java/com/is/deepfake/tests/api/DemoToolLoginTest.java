@@ -29,9 +29,9 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @Autowired
     private DemoToolClient demoToolClient;
 
-    @InfraAnnotation(cleanDatabase   = true)
-    @CommonAnnotation(createCompany = true )
-    @DeepfakeAnnotation(createDfsTenant = true ,joinTeamsMeeting = true)
+     @InfraAnnotation(cleanDatabase   = true)
+     @CommonAnnotation(createCompany = true )
+     @DeepfakeAnnotation(createDfsTenant = true ,joinTeamsMeeting = true)
   
    
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")

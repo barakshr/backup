@@ -23,14 +23,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Execution order = registration order.
  * Teardown order  = reverse of registration order (guaranteed by SetupOrchestrator).
  */
-public class SetupActionRegistry {
+public class ActionRegistry {
 
-    private static final Logger log = LoggerFactory.getLogger(SetupActionRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(ActionRegistry.class);
 
     private static final List<Action> actions      = new CopyOnWriteArrayList<>();
     private static final Set<Class<?>> registered   = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private SetupActionRegistry() {}
+    private ActionRegistry() {}
 
     public static void register(Action action) {
         if (registered.add(action.getClass())) {

@@ -2,7 +2,7 @@ package com.is.deepfake.testng.action;
 
 import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
 import com.is.deepfake.testng.context.DeepfakeContextHolder;
-import com.is.deepfake.testng.context.DeepfakeTestContext;
+import com.is.deepfake.testng.context.DeepfakeContextUtil;
 import com.is.infra.testng.action.AbstractAction;
 
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class CreateDfsTenantAction extends AbstractAction {
     public void setup(Method method) {
         log.info("CreateDfsTenantAction.setup for test method: {}", method.getName());
         // TODO: create DFS tenant via API and pass it here
-        DeepfakeContextHolder.set(new DeepfakeTestContext(null));
+        DeepfakeContextUtil.getContext().setDfsTenant(null);
     }
 
     @Override

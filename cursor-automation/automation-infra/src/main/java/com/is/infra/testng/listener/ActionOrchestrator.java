@@ -1,7 +1,7 @@
-package com.is.infra.testng.listeners;
+package com.is.infra.testng.listener;
 
 import com.is.infra.selenium.DriverHolder;
-import com.is.infra.testng.SetupActionRegistry;
+import com.is.infra.testng.ActionRegistry;
 import com.is.infra.testng.action.Action;
 
 import org.slf4j.Logger;
@@ -24,9 +24,9 @@ import java.util.List;
  *
  * Teardown is wrapped in try/catch per action so one failure does not skip the rest.
  */
-public class SetupOrchestrator implements IInvokedMethodListener {
+public class ActionOrchestrator implements IInvokedMethodListener {
 
-    private static final Logger log = LoggerFactory.getLogger(SetupOrchestrator.class);
+    private static final Logger log = LoggerFactory.getLogger(ActionOrchestrator.class);
 
     @Override
     public void beforeInvocation(IInvokedMethod invokedMethod, ITestResult testResult) {
@@ -34,7 +34,7 @@ public class SetupOrchestrator implements IInvokedMethodListener {
 
         Method method = invokedMethod.getTestMethod().getConstructorOrMethod().getMethod();
 
-        for (Action action : SetupActionRegistry.getActions()) {
+        for (Action action : ActionRegistry.getActions()) {
             if (action.appliesTo(method)) {
                 log.debug("Setup: {}", action.getClass().getSimpleName());
                 action.setup(method);
@@ -47,7 +47,7 @@ public class SetupOrchestrator implements IInvokedMethodListener {
         if (!invokedMethod.isTestMethod()) return;
 
         Method method = invokedMethod.getTestMethod().getConstructorOrMethod().getMethod();
-        List<Action> reversed = new ArrayList<>(SetupActionRegistry.getActions());
+        List<Action> reversed = new ArrayList<>(ActionRegistry.getActions());
         Collections.reverse(reversed);
 
         for (Action action : reversed) {

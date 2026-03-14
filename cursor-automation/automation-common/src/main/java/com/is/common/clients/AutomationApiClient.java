@@ -17,6 +17,6 @@ package com.is.common.clients;
 public class AutomationApiClient {
 
     public AutomationApiClient() {
-        throw new UnsupportedOperationException("AutomationApiClient not yet implemented");
+//        throw new UnsupportedOperationException("AutomationApiClient not yet implemented");
     }
 }

@@ -1,4 +1,4 @@
-package com.is.infra.testng.listeners;
+package com.is.infra.testng.listener;
 
 import com.is.infra.reporting.AllureHelper;
 import com.is.infra.selenium.DriverHolder;

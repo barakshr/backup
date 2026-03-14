@@ -6,7 +6,7 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.Listeners;
 
-import com.is.infra.testng.listener.SetupOrchestrator;
+import com.is.infra.testng.listener.ActionOrchestrator;
 import com.is.infra.testng.listener.SuiteListener;
 import com.is.infra.testng.listener.TestListener;
 
@@ -22,7 +22,7 @@ import com.is.infra.testng.listener.TestListener;
  * Product base tests register product-specific actions in their own @BeforeSuite.
  * Driver is created lazily when a Page Object is first used; no browser action.
  */
-@Listeners({TestListener.class, SetupOrchestrator.class, SuiteListener.class})
+@Listeners({TestListener.class, ActionOrchestrator.class, SuiteListener.class})
 public abstract class BaseTest extends AbstractTestNGSpringContextTests {
 
     private static final Logger log = LoggerFactory.getLogger(BaseTest.class);
