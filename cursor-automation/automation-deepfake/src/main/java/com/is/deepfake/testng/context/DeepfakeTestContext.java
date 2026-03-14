@@ -1,31 +1,40 @@
 package com.is.deepfake.testng.context;
 
+import com.is.deepfake.product.Meeting;
+
 /**
  * Holds deepfake-specific test resources for a single test method.
- * Stored in DeepfakeContextHolder (ThreadLocal) — one instance per thread, parallel-safe.
- * Lifecycle managed by CreateDfsTenantAction.
+ * One instance per test (ThreadLocal via DeepfakeContextHolder).
+ * Actions use DeepfakeContextUtil.getContext() and set only their field.
  *
  * dfsTenant is typed as Object until DfsTenantDto is defined.
- * Once defined, replace with:
- *   private final DfsTenantDto dfsTenant;
  *
  * Retrieve in tests via:
  *   DeepfakeContextHolder.get().getDfsTenant()
+ *   DeepfakeContextHolder.get().getMeeting()
  */
 public class DeepfakeTestContext {
 
-    private final Object dfsTenant;
-   
+    private Object dfsTenant;
+    private Meeting meeting;
 
-    public DeepfakeTestContext(Object dfsTenant) {
-        this.dfsTenant = dfsTenant;
+    public DeepfakeTestContext() {
+        // empty; actions set their piece via setters
     }
 
     public Object getDfsTenant() {
         return dfsTenant;
     }
 
-    public Object getMeeting() {
+    public void setDfsTenant(Object dfsTenant) {
+        this.dfsTenant = dfsTenant;
+    }
+
+    public Meeting getMeeting() {
         return meeting;
+    }
+
+    public void setMeeting(Meeting meeting) {
+        this.meeting = meeting;
     }
 }

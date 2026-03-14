@@ -3,10 +3,10 @@ package com.is.common.testng.action;
 import com.is.common.dto.CompanyDto;
 import com.is.common.testng.annotation.CommonAnnotation;
 import com.is.common.testng.context.CommonContextHolder;
+import com.is.common.testng.context.CommonContextUtil;
 import com.is.common.testng.context.CommonTestContext;
 import com.is.common.workflows.CompanySetupWorkflow;
 import com.is.infra.testng.action.AbstractAction;
-import com.is.infra.testng.annotation.InfraAnnotation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class CreateCompanyAction extends AbstractAction {
     public void setup(Method method) {
         log.info("Creating company for test: {}", method.getName());
         CompanyDto company = companyWorkflow.create().build();
-        CommonContextHolder.set(new CommonTestContext(company));
+        CommonContextUtil.getContext().setCompany(company);
     }
 
     @Override
