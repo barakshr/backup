@@ -9,6 +9,10 @@ import org.openqa.selenium.By;
  */
 public class LoginPage extends BasePage {
 
+    public LoginPage() {
+        super("");
+    }
+
     private static final By USERNAME = By.name("email");
     private static final By PASSWORD = By.name("password");
     private static final By SIGN_IN_BUTTON = By.className("is-button-internal-container");
@@ -27,6 +31,7 @@ public class LoginPage extends BasePage {
         click(SIGN_IN_BUTTON);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public LoginPage open(String url) {
         super.open(url);

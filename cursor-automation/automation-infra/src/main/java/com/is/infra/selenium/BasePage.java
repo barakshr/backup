@@ -16,15 +16,26 @@ import java.time.Duration;
  *
  * All element interactions wait before acting (explicit wait via WebDriverWait).
  */
-public abstract class BasePage {
+public abstract class BasePage { 
 
     protected static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
+
+    private final WebDriver driver=DriverHolder.getDriver();
+
+    public BasePage() {
+        checkDriver();  // check if driver is found before navigating to the page
+    }
+
+    public BasePage(String url) {
+        navigateTo(url);
+        checkDriver();  // check if driver is found before navigating to the page
+    }
 
     /**
      * Returns the WebDriver for the current thread, creating it on first call (reads config).
      */
     protected WebDriver getDriver() {
-        return DriverHolder.getDriver();
+        return driver;
     }
 
     /**
@@ -110,4 +121,10 @@ public abstract class BasePage {
         }
         return new byte[0];
     }
+
+    private void checkDriver() {
+        if (driver == null) {
+          throw new IllegalStateException("Driver not found");
+        }
+      }
 }

@@ -1,5 +1,6 @@
 package com.is.deepfake.tests.ui;
 
+import com.is.common.pages.LoginPage;
 import com.is.deepfake.config.DemoToolProperties;
 import com.is.deepfake.testng.DeepfakeBaseTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class LoginPageTest extends DeepfakeBaseTest {
     public void login() {
         String loginUrl = demoToolProperties.getBaseUrl() + "/login";
 
-        loginPage()
+        new LoginPage()
                 .open(loginUrl)
                 .setUserName(demoToolProperties.getUsername())
                 .setPassword(demoToolProperties.getPassword())
