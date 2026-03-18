@@ -10,10 +10,10 @@ import org.openqa.selenium.By;
 public class LoginPage extends BasePage {
 
     public LoginPage() {
-        super("");
+        super("https://www.patternfly.org/components/login-page/");
     }
 
-    private static final By USERNAME = By.name("email");
+    private static final By USERNAME = By.name("username");
     private static final By PASSWORD = By.name("password");
     private static final By SIGN_IN_BUTTON = By.className("is-button-internal-container");
 
