@@ -26,6 +26,8 @@ public abstract class BasePage {
         checkDriver();  // check if driver is found before navigating to the page
     }
 
+
+
     public BasePage(String url) {
         this();
         navigateTo(url);
@@ -57,18 +59,21 @@ public abstract class BasePage {
     /**
      * Waits for element, then clicks it.
      */
-    protected void click(By locator) {
+    protected BasePage click(By locator) {
         findClickable(locator).click();
+        return this;
     }
 
     /**
      * Waits for element, then types into it (clears first).
      */
-    protected void type(By locator, String text) {
+    protected BasePage type(By locator, String text) {
         WebElement el = find(locator);
         el.clear();
         el.sendKeys(text);
+        return this;
     }
+
 
     /**
      * Waits for element, then returns its text.
@@ -80,8 +85,9 @@ public abstract class BasePage {
     /**
      * Navigates the browser to the given URL.
      */
-    public void navigateTo(String url) {
+    public BasePage navigateTo(String url) {
         getDriver().get(url);
+        return this;
     }
 
     /**
