@@ -21,7 +21,9 @@ public abstract class DeepfakeBaseTest extends CommonBaseTest {
 
     @BeforeSuite(alwaysRun = true)
     public void registerDeepfakeActions() {
+
         ActionRegistry.register(new CreateDfsTenantAction());
         ActionRegistry.register(new JoinTeamsMeetingAction());
+
     }
 }
