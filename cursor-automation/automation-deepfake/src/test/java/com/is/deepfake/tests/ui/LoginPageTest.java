@@ -1,28 +1,27 @@
 package com.is.deepfake.tests.ui;
 
-import com.is.common.pages.LoginPage;
+import com.is.deepfake.config.DemoToolProperties;
 import com.is.deepfake.testng.DeepfakeBaseTest;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
- * UI test: navigate to login page and get title.
- * Driver starts when LoginPage is first used (login or getTitle).
- * Driver is closed after the test by SetupOrchestrator.
+ * UI test: login via DemoTool login page.
+ * Driver starts when LoginPage is first used.
  */
 public class LoginPageTest extends DeepfakeBaseTest {
 
-    @Test(description = "Open login page and verify title is non-empty")
-    public void loginAndGetTitle() {
-        LoginPage loginPage = new LoginPage();
+    @Autowired
+    private DemoToolProperties demoToolProperties;
 
-        loginPage.login("https://example.com/login", "testuser", "testpass");
+    @Test(description = "Login to DemoTool")
+    public void login() {
+        String loginUrl = demoToolProperties.getBaseUrl() + "/login";
 
-        String title = loginPage.getTitle();
-        assertThat(title)
-                .as("Page title after login navigation should not be empty")
-                .isNotEmpty();
+        loginPage()
+                .open(loginUrl)
+                .setUserName(demoToolProperties.getUsername())
+                .setPassword(demoToolProperties.getPassword())
+                .signIn();
     }
 }

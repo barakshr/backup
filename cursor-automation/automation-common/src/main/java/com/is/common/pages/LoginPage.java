@@ -1,24 +1,35 @@
 package com.is.common.pages;
 
 import com.is.infra.selenium.BasePage;
+import org.openqa.selenium.By;
 
 /**
- * Page Object for the login screen (IronScales / shared login).
- * Driver starts when this page is first used (e.g. getTitle() or login()).
+ * Page Object for the login screen.
+ * Driver starts when this page is first used.
  */
 public class LoginPage extends BasePage {
 
-    @Override
-    public String getTitle() {
-        return super.getTitle();
+    private static final By USERNAME = By.name("email");
+    private static final By PASSWORD = By.name("password");
+    private static final By SIGN_IN_BUTTON = By.className("is-button-internal-container");
+
+    public LoginPage setUserName(String username) {
+        type(USERNAME, username);
+        return this;
     }
 
-    /**
-     * Navigates to the login page. Credentials are not yet filled (TODO: add selectors and submit).
-     * First call starts the driver.
-     */
-    public void login(String loginPageUrl, String username, String password) {
-        navigateTo(loginPageUrl);
-        // TODO: find username/password fields, fill and submit when selectors are defined
+    public LoginPage setPassword(String password) {
+        type(PASSWORD, password);
+        return this;
+    }
+
+    public void signIn() {
+        click(SIGN_IN_BUTTON);
+    }
+
+    @Override
+    public LoginPage open(String url) {
+        super.open(url);
+        return this;
     }
 }
