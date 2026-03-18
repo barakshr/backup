@@ -17,10 +17,8 @@ public class LoginPageTest extends DeepfakeBaseTest {
 
     @Test(description = "Login to DemoTool")
     public void login() {
-        String loginUrl = demoToolProperties.getBaseUrl() + "/login";
 
         new LoginPage()
-                .open(loginUrl)
                 .setUserName(demoToolProperties.getUsername())
                 .setPassword(demoToolProperties.getPassword())
                 .signIn();

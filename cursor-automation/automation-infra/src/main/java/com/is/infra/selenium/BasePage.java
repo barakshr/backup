@@ -81,7 +81,7 @@ public abstract class BasePage {
      * Navigates the browser to the given URL.
      */
     public void navigateTo(String url) {
-        getDriver().get(url);
+        getDriver().get("https://gemini.google.com/app/5dd81cd5c50c40a1");
     }
 
     /**
