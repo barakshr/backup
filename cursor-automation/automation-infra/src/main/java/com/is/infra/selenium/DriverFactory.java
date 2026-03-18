@@ -45,7 +45,7 @@ public class DriverFactory {
     public static WebDriver create() {
         ConfigManager config   = ConfigManager.load();
         String        name     = config.getString("browser.type", "chrome").toUpperCase();
-        boolean       headless = config.getBoolean("browser.headless", true);
+        boolean       headless = config.getBoolean("browser.headless", false);
         BrowserType   type;
         try {
             type = BrowserType.valueOf(name);

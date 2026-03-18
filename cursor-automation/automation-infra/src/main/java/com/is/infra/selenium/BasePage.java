@@ -27,8 +27,8 @@ public abstract class BasePage {
     }
 
     public BasePage(String url) {
+        this();
         navigateTo(url);
-        checkDriver();  // check if driver is found before navigating to the page
     }
 
     /**
