@@ -5,22 +5,36 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
- * Central configuration loader. Loads from a properties file on the classpath.
- * Environment variables override properties file values — this allows Jenkins
- * to inject secrets and environment-specific values without modifying files.
- *
- * Priority (highest to lowest):
- *   1. Environment variable (e.g. DEMO_TOOL_BASE_URL)
- *   2. Properties file value (e.g. demo.tool.base.url)
- *   3. Default value provided at call site
+ * Global configuration singleton. Loads once per JVM run, then shared by all code.
+ * <p>
+ * Load order (later wins for the same key, except env vars always win at read time):
+ * <ol>
+ *   <li>{@code infra-defaults.properties} — infra baseline on the classpath</li>
+ *   <li>{@code config.properties} — module-specific (e.g. deepfake {@code src/test/resources})</li>
+ * </ol>
+ * Environment variables override file values on every {@link #getString(String)} read.
+ * <p>
+ * Mandatory keys must be present (in file or env) after merge; {@link #get()} fails fast if any are missing.
  */
 public class ConfigManager {
 
     private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
-    private static final String DEFAULT_CONFIG_FILE = "config.properties";
+
+    private static final String INFRA_DEFAULTS_FILE = "infra-defaults.properties";
+    private static final String MODULE_CONFIG_FILE = "config.properties";
+
+    private static final List<String> MANDATORY_KEYS = List.of(
+            "aut.base.url",
+            "browser.type",
+            "browser.headless"
+    );
+
+    private static volatile ConfigManager INSTANCE;
 
     private final Properties properties;
 
@@ -29,30 +43,58 @@ public class ConfigManager {
     }
 
     /**
-     * Loads the default config.properties from the classpath.
+     * Returns the shared {@link ConfigManager}, initializing it on first access (thread-safe).
      */
-    public static ConfigManager load() {
-        return load(DEFAULT_CONFIG_FILE);
+    public static ConfigManager get() {
+        if (INSTANCE == null) {
+            synchronized (ConfigManager.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = init();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
-    /**
-     * Loads a named properties file from the classpath.
-     *
-     * @param fileName the properties file name (relative to classpath root)
-     */
-    public static ConfigManager load(String fileName) {
+    private static ConfigManager init() {
         Properties props = new Properties();
+        loadInto(props, INFRA_DEFAULTS_FILE);
+        loadInto(props, MODULE_CONFIG_FILE);
+        ConfigManager cm = new ConfigManager(props);
+        cm.validateMandatoryKeys();
+        log.info("ConfigManager initialized (merged {} + {})", INFRA_DEFAULTS_FILE, MODULE_CONFIG_FILE);
+        return cm;
+    }
+
+    private static void loadInto(Properties target, String fileName) {
         try (InputStream in = ConfigManager.class.getClassLoader().getResourceAsStream(fileName)) {
             if (in == null) {
-                log.warn("Config file '{}' not found on classpath. Using env vars only.", fileName);
-            } else {
-                props.load(in);
-                log.info("Loaded config from '{}'", fileName);
+                log.warn("Config file '{}' not found on classpath, skipping.", fileName);
+                return;
             }
+            Properties chunk = new Properties();
+            chunk.load(in);
+            target.putAll(chunk);
+            log.info("Loaded config from '{}'", fileName);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load config file: " + fileName, e);
         }
-        return new ConfigManager(props);
+    }
+
+    private void validateMandatoryKeys() {
+        List<String> missing = new ArrayList<>();
+        for (String key : MANDATORY_KEYS) {
+            String value = getString(key);
+            if (value == null || value.isBlank()) {
+                missing.add(key);
+            }
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalStateException(
+                    "Missing mandatory config keys: " + missing
+                            + ". Set them in your module's config.properties or via the matching env vars."
+            );
+        }
     }
 
     /**
@@ -112,7 +154,7 @@ public class ConfigManager {
         if (value == null || value.isBlank()) {
             throw new IllegalStateException(
                     "Required config key '" + key + "' is not set. " +
-                    "Set it in config.properties or via env var '" + toEnvVarKey(key) + "'"
+                            "Set it in config.properties or via env var '" + toEnvVarKey(key) + "'"
             );
         }
         return value;

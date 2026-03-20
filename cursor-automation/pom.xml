@@ -36,7 +36,6 @@
         <selenium.version>4.18.1</selenium.version>
         <wiremock.version>3.4.2</wiremock.version>
         <aspectj.version>1.9.21</aspectj.version>
-        <spring.boot.version>3.2.3</spring.boot.version>
 
         <!-- Plugin versions -->
         <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
@@ -46,15 +45,6 @@
 
     <dependencyManagement>
         <dependencies>
-
-            <!-- Spring Boot BOM — manages all Spring versions consistently -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
 
             <!-- Internal modules -->
             <dependency>

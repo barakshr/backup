@@ -22,7 +22,7 @@ public class RetryAnalyzer implements IRetryAnalyzer {
 
     private static final Logger log = LoggerFactory.getLogger(RetryAnalyzer.class);
 
-    private static final int MAX_RETRY_COUNT = ConfigManager.load().getInt("retry.max", 1);
+    private static final int MAX_RETRY_COUNT = ConfigManager.get().getInt("retry.max", 1);
 
     private int retryCount = 0;
 

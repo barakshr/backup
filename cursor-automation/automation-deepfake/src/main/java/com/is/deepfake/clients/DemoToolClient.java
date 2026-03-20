@@ -1,22 +1,21 @@
 package com.is.deepfake.clients;
 
-import com.is.deepfake.config.DemoToolProperties;
 import com.is.deepfake.dto.DemoToolCallRequest;
+import com.is.infra.config.ConfigManager;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.http.BaseApiClient;
 import com.is.infra.http.CookieAuthProvider;
 import com.is.infra.http.HttpClientProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 /**
  * Client for the IronScales DemoTool API.
- *
+ * <p>
  * Auth: cookie-based (POST /auth/login → JWT in Set-Cookie → Cookie on all requests).
- * Config: injected via DemoToolProperties (automation.demo-tool.*).
- * HTTP config: injected via HttpClientProperties (automation.http.*).
- *
+ * Config: {@code demo.tool.*} keys via {@link ConfigManager}.
+ * HTTP tuning: {@code http.*} keys via {@link HttpClientProperties}.
+ * <p>
  * Endpoints:
  *   GET  /calls/status        — current call status
  *   GET  /dashboard/calls     — list all calls
@@ -24,25 +23,28 @@ import java.util.Map;
  *   POST /calls/leave-call    — leave a call
  *   POST /calls/trigger-popup — trigger the deepfake popup
  */
-@Component
 public class DemoToolClient extends BaseApiClient {
 
-    private static final String LOGIN_PATH        = "/auth/login";
-    private static final String CALL_STATUS_PATH  = "/calls/status";
-    private static final String DASHBOARD_PATH    = "/dashboard/calls";
-    private static final String JOIN_PATH         = "/calls/join-multiple";
-    private static final String LEAVE_PATH        = "/calls/leave-call";
+    private static final String LOGIN_PATH         = "/auth/login";
+    private static final String CALL_STATUS_PATH   = "/calls/status";
+    private static final String DASHBOARD_PATH     = "/dashboard/calls";
+    private static final String JOIN_PATH          = "/calls/join-multiple";
+    private static final String LEAVE_PATH         = "/calls/leave-call";
     private static final String TRIGGER_POPUP_PATH = "/calls/trigger-popup";
 
-    public DemoToolClient(DemoToolProperties props, HttpClientProperties httpProps) {
+    public DemoToolClient() {
+        this(ConfigManager.get());
+    }
+
+    private DemoToolClient(ConfigManager cfg) {
         super(
-            props.getBaseUrl(),
-            new CookieAuthProvider(
-                props.getBaseUrl() + LOGIN_PATH,
-                props.getUsername(),
-                props.getPassword()
-            ),
-            httpProps
+                cfg.getRequired("demo.tool.base.url"),
+                new CookieAuthProvider(
+                        cfg.getRequired("demo.tool.base.url") + LOGIN_PATH,
+                        cfg.getRequired("demo.tool.username"),
+                        cfg.getRequired("demo.tool.password")
+                ),
+                new HttpClientProperties()
         );
     }
 

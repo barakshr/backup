@@ -43,7 +43,7 @@ public class DriverFactory {
 
     /** Creates a driver using browser.type and browser.headless from config.properties. */
     public static WebDriver create() {
-        ConfigManager config   = ConfigManager.load();
+        ConfigManager config   = ConfigManager.get();
         String        name     = config.getString("browser.type", "chrome").toUpperCase();
         boolean       headless = config.getBoolean("browser.headless", false);
         BrowserType   type;
@@ -71,7 +71,7 @@ public class DriverFactory {
     private static BrowserType resolve(BrowserType type) {
         if (type == null || type == BrowserType.DEFAULT) {
             return BrowserType.valueOf(
-                    ConfigManager.load().getString("browser.type", "chrome").toUpperCase());
+                    ConfigManager.get().getString("browser.type", "chrome").toUpperCase());
         }
         return type;
     }

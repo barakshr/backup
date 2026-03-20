@@ -1,29 +1,38 @@
 package com.is.infra.http;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import com.is.infra.config.ConfigManager;
 
 /**
- * Global HTTP configuration shared by all API clients.
- * Bound from the "automation.http" block in application.yml.
- *
- * Defaults are applied when not overridden in the consuming module's application.yml.
- * Register via @EnableConfigurationProperties(HttpClientProperties.class) in the module's
- * Spring bootstrap class.
+ * HTTP client tuning for RestAssured-backed API clients.
+ * Values are read from {@link ConfigManager} keys (with defaults):
+ * <ul>
+ *   <li>{@code http.read.timeout} — seconds (default 60)</li>
+ *   <li>{@code http.connection.timeout} — seconds (default 30)</li>
+ *   <li>{@code http.log.requests} — boolean (default true)</li>
+ * </ul>
  */
-@Data
-@ConfigurationProperties(prefix = "automation.http")
 public class HttpClientProperties {
 
-    /** Socket read timeout in seconds. */
-    private int readTimeout = 60;
+    private final int readTimeout;
+    private final int connectionTimeout;
+    private final boolean logRequests;
 
-    /** Connection establishment timeout in seconds. */
-    private int connectionTimeout = 30;
+    public HttpClientProperties() {
+        ConfigManager cfg = ConfigManager.get();
+        this.readTimeout = cfg.getInt("http.read.timeout", 60);
+        this.connectionTimeout = cfg.getInt("http.connection.timeout", 30);
+        this.logRequests = cfg.getBoolean("http.log.requests", true);
+    }
 
-    /** Max retry attempts for transient failures (used by RetryAnalyzer). */
-    private int retryMaxAttempts = 3;
+    public int getReadTimeout() {
+        return readTimeout;
+    }
 
-    /** When true, RestAssured logs full request and response details. */
-    private boolean logRequests = true;
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public boolean isLogRequests() {
+        return logRequests;
+    }
 }

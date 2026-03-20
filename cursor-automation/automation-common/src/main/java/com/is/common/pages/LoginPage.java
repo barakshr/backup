@@ -1,5 +1,6 @@
 package com.is.common.pages;
 
+import com.is.infra.config.ConfigManager;
 import com.is.infra.selenium.BasePage;
 import org.openqa.selenium.By;
 
@@ -10,7 +11,7 @@ import org.openqa.selenium.By;
 public class LoginPage extends BasePage {
 
     public LoginPage() {
-        super("https://www.patternfly.org/components/login-page/");
+        super(ConfigManager.get().getRequired("aut.base.url"));
     }
 
     private static final By USERNAME = By.name("username");

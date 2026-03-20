@@ -28,8 +28,7 @@ public abstract class BaseApiClient {
     private final HttpClientProperties httpProps;
 
     /**
-     * Primary constructor used by Spring-managed clients.
-     * Accepts injected HttpClientProperties for timeouts and logging config.
+     * Primary constructor. {@link HttpClientProperties} is built from {@code http.*} config keys.
      */
     protected BaseApiClient(String baseUrl, AuthProvider authProvider, HttpClientProperties httpProps) {
         this.baseUrl = baseUrl;
@@ -38,8 +37,7 @@ public abstract class BaseApiClient {
     }
 
     /**
-     * Backward-compatible constructor for non-Spring stub clients.
-     * Uses default HttpClientProperties values.
+     * Constructor for stub clients using default {@link HttpClientProperties} (reads {@link com.is.infra.config.ConfigManager}).
      */
     protected BaseApiClient(String baseUrl, AuthProvider authProvider) {
         this(baseUrl, authProvider, new HttpClientProperties());

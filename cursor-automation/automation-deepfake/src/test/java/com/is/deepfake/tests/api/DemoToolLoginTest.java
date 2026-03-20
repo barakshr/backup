@@ -8,32 +8,27 @@ import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
 import com.is.deepfake.testng.context.DeepfakeContextHolder;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.testng.annotation.InfraAnnotation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Smoke tests for the DemoTool API.
- *
+ * <p>
  * Auth flow (handled automatically by CookieAuthProvider):
  *   1. POST /auth/login with form credentials
  *   2. Capture JWT from Set-Cookie on the 303 redirect
  *   3. Attach cookie to all subsequent requests
- *
- * Credentials are loaded from application.yml or environment variables:
- *   DEMO_TOOL_BASE_URL, DEMO_TOOL_USERNAME, DEMO_TOOL_PASSWORD
+ * <p>
+ * Credentials and URLs: {@code config.properties} or env vars (e.g. {@code DEMO_TOOL_BASE_URL}).
  */
 public class DemoToolLoginTest extends DeepfakeBaseTest {
 
-    @Autowired
-    private DemoToolClient demoToolClient;
+    private final DemoToolClient demoToolClient = new DemoToolClient();
 
-     @InfraAnnotation(cleanDatabase   = true)
-     @CommonAnnotation(createCompany = true )
-     @DeepfakeAnnotation(createDfsTenant = true ,joinTeamsMeeting = true)
-  
-   
+    @InfraAnnotation(cleanDatabase = true)
+    @CommonAnnotation(createCompany = true)
+    @DeepfakeAnnotation(createDfsTenant = true, joinTeamsMeeting = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
         ApiResponse response = demoToolClient.getCallStatus();

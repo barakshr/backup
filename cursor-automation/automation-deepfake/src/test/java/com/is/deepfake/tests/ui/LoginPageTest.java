@@ -2,9 +2,8 @@ package com.is.deepfake.tests.ui;
 
 import com.is.common.pages.LoginPage;
 import com.is.common.pages.assert_page.AssertLoginPage;
-import com.is.deepfake.config.DemoToolProperties;
 import com.is.deepfake.testng.DeepfakeBaseTest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.is.infra.config.ConfigManager;
 import org.testng.annotations.Test;
 
 /**
@@ -13,19 +12,15 @@ import org.testng.annotations.Test;
  */
 public class LoginPageTest extends DeepfakeBaseTest {
 
-    @Autowired
-    private DemoToolProperties demoToolProperties;
-
     @Test(description = "Login to DemoTool")
     public void login() {
+        ConfigManager cfg = ConfigManager.get();
         new LoginPage()
-                .setUserName(demoToolProperties.getUsername())
-                .setPassword(demoToolProperties.getPassword())
+                .setUserName(cfg.getRequired("demo.tool.username"))
+                .setPassword(cfg.getRequired("demo.tool.password"))
                 .signIn()
                 .assertPage(AssertLoginPage.class)
                 .checkLogo()
                 .returnToPage();
-                
-              
     }
 }
