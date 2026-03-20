@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.lang.reflect.Constructor;
 import java.time.Duration;
 
 /**
@@ -35,9 +36,27 @@ public abstract class BasePage {
 
     /**
      * Returns the WebDriver for the current thread, creating it on first call (reads config).
+     * Public so page-specific {@link Assert} implementations in other modules can perform checks.
      */
-    protected WebDriver getDriver() {
+    public WebDriver getDriver() {
         return driver;
+    }
+
+    /**
+     * Instantiates the given assertion class via reflection (single-arg constructor: concrete page type).
+     * Example: {@code new LoginPage().assertPage(AssertLoginPage.class).checkLogo().returnToPage()...}
+     *
+     * @param assertClass assertion class with {@code public AssertX(YourPage page)}
+     */
+    public <A extends Assert<?>> A assertPage(Class<A> assertClass) {
+        try {
+            Constructor<A> ctor = (Constructor<A>) assertClass.getDeclaredConstructor(getClass());
+            return ctor.newInstance(this);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Cannot create " + assertClass.getSimpleName() + " for " + getClass().getSimpleName()
+                            + ": need public constructor (" + getClass().getSimpleName() + " page).", e);
+        }
     }
 
     /**

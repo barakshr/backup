@@ -18,7 +18,7 @@ public class LoginPage extends BasePage {
     private static final By SIGN_IN_BUTTON = By.className("is-button-internal-container");
 
     public LoginPage setUserName(String username) {
-        type(USERNAME, username);
+        //type(USERNAME, username);
         return this;
     }
 
