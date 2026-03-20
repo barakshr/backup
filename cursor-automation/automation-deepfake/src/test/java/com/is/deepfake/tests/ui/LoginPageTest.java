@@ -20,10 +20,12 @@ public class LoginPageTest extends DeepfakeBaseTest {
     public void login() {
         new LoginPage()
                 .setUserName(demoToolProperties.getUsername())
+                .setPassword(demoToolProperties.getPassword())
+                .signIn()
                 .assertPage(AssertLoginPage.class)
                 .checkLogo()
-                .returnToPage()
-                .setPassword(demoToolProperties.getPassword())
-                .signIn();
+                .returnToPage();
+                
+              
     }
 }

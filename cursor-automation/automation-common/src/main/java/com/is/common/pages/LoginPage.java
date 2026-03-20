@@ -27,8 +27,8 @@ public class LoginPage extends BasePage {
         return this;
     }
 
-    public void signIn() {
-        click(SIGN_IN_BUTTON);
+    public LoginPage signIn() {
+        return this;
     }
 
     @SuppressWarnings("unchecked")
