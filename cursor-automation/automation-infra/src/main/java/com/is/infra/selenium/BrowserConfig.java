@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 public @interface BrowserConfig {
 
     /** Browser to use. DEFAULT resolves from config.properties. */
-    BrowserType type() default BrowserType.DEFAULT;
+    BrowserType type() default BrowserType.CHROME;
 
     /** Whether to run headless. Defaults to true (CI-safe). */
     boolean headless() default true;

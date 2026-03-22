@@ -1,52 +1,70 @@
 package com.is.infra.selenium;
 
-import com.is.infra.config.ConfigManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.is.infra.config.ConfigManager;
+
 /**
  * Creates and manages WebDriver instances.
  *
- * Browser binaries are managed by Selenium Manager (bundled with Selenium 4.6+).
+ * Browser binaries are managed by Selenium Manager (bundled with Selenium
+ * 4.6+).
  * No external WebDriverManager dependency is required.
  *
  * Browser resolution:
- *   - create(BrowserType, headless) — explicit type; DEFAULT resolved from config.
- *   - create()                      — reads browser.type and browser.headless from config.
+ * - create(BrowserType, headless) — explicit type; DEFAULT resolved from
+ * config.
+ * - create() — reads browser.type and browser.headless from config.
  *
  * Quit:
- *   - quit(driver) — null-safe; swallows exceptions to keep teardown reliable.
+ * - quit(driver) — null-safe; swallows exceptions to keep teardown reliable.
  */
 public class DriverFactory {
 
     private static final Logger log = LoggerFactory.getLogger(DriverFactory.class);
 
-    private DriverFactory() {}
+    private DriverFactory() {
+    }
+
+    public static WebDriver newCreate(DriverRegister driverRegister) {
+        BrowserType browserType = driverRegister.getBrowserType();
+        Options<?> options = driverRegister.getOptions();
+        if (browserType == BrowserType.CHROME) {
+            return new ChromeDriver((ChromeOptions) options.getOptions());
+        }
+
+        return null;
+    }
 
     public static WebDriver create(BrowserType browserType, boolean headless) {
-        BrowserType resolved = resolve(browserType);
+        BrowserType resolved = browserType;
         log.info("Creating {} driver (headless={})", resolved, headless);
         return switch (resolved) {
-            case CHROME  -> headless ? new ChromeDriver(DriverOptions.headlessChrome())
-                                     : new ChromeDriver(DriverOptions.headedChrome());
+            case CHROME -> headless ? new ChromeDriver(DriverOptions.headlessChrome())
+                    : new ChromeDriver(DriverOptions.headedChrome());
             case FIREFOX -> headless ? new FirefoxDriver(DriverOptions.headlessFirefox())
-                                     : new FirefoxDriver(DriverOptions.headedFirefox());
-            case EDGE    -> headless ? new EdgeDriver(DriverOptions.headlessEdge())
-                                     : new EdgeDriver(DriverOptions.headedEdge());
-            default      -> throw new IllegalStateException("Unresolved browser type: " + resolved);
+                    : new FirefoxDriver(DriverOptions.headedFirefox());
+            case EDGE -> headless ? new EdgeDriver(DriverOptions.headlessEdge())
+                    : new EdgeDriver(DriverOptions.headedEdge());
+            default -> throw new IllegalStateException("Unresolved browser type: " + resolved);
         };
     }
 
-    /** Creates a driver using browser.type and browser.headless from config.properties. */
+    /**
+     * Creates a driver using browser.type and browser.headless from
+     * config.properties.
+     */
     public static WebDriver create() {
-        ConfigManager config   = ConfigManager.get();
-        String        name     = config.getString("browser.type", "chrome").toUpperCase();
-        boolean       headless = config.getBoolean("browser.headless", false);
-        BrowserType   type;
+        ConfigManager config = ConfigManager.get();
+        String name = config.getString("browser.type", "chrome").toUpperCase();
+        boolean headless = config.getBoolean("browser.headless", false);
+        BrowserType type;
         try {
             type = BrowserType.valueOf(name);
         } catch (IllegalArgumentException e) {
@@ -68,11 +86,4 @@ public class DriverFactory {
         }
     }
 
-    private static BrowserType resolve(BrowserType type) {
-        if (type == null || type == BrowserType.DEFAULT) {
-            return BrowserType.valueOf(
-                    ConfigManager.get().getString("browser.type", "chrome").toUpperCase());
-        }
-        return type;
-    }
 }

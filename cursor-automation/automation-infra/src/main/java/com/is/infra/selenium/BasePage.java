@@ -1,5 +1,8 @@
 package com.is.infra.selenium;
 
+import java.lang.reflect.Constructor;
+import java.time.Duration;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -8,43 +11,39 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.lang.reflect.Constructor;
-import java.time.Duration;
-
 /**
  * Base class for all Page Objects.
- * Driver is obtained lazily from DriverHolder — first use of a Page Object starts the browser.
+ * Driver is obtained lazily from DriverHolder — first use of a Page Object
+ * starts the browser.
  *
- * All element interactions wait before acting (explicit wait via WebDriverWait).
+ * All element interactions wait before acting (explicit wait via
+ * WebDriverWait).
  */
-public abstract class BasePage { 
+public abstract class BasePage {
 
     protected static final Duration DEFAULT_WAIT = Duration.ofSeconds(10);
 
-    private final WebDriver driver=DriverHolder.getDriver();
+    private final WebDriver driver;
 
     public BasePage() {
-        checkDriver();  // check if driver is found before navigating to the page
+        this.driver = DriverHolder.getDriver();
+        checkDriver();
     }
 
-
-
-    public BasePage(String url) {
-        this();
-        navigateTo(url);
+    public BasePage(WebDriver driver) {
+        this.driver = driver;
+        checkDriver();
     }
 
-    /**
-     * Returns the WebDriver for the current thread, creating it on first call (reads config).
-     * Public so page-specific {@link Assert} implementations in other modules can perform checks.
-     */
     public WebDriver getDriver() {
         return driver;
     }
 
     /**
-     * Instantiates the given assertion class via reflection (single-arg constructor: concrete page type).
-     * Example: {@code new LoginPage().assertPage(AssertLoginPage.class).checkLogo().returnToPage()...}
+     * Instantiates the given assertion class via reflection (single-arg
+     * constructor: concrete page type).
+     * Example:
+     * {@code new LoginPage().assertPage(AssertLoginPage.class).checkLogo().returnToPage()...}
      *
      * @param assertClass assertion class with {@code public AssertX(YourPage page)}
      */
@@ -55,7 +54,8 @@ public abstract class BasePage {
         } catch (Exception e) {
             throw new RuntimeException(
                     "Cannot create " + assertClass.getSimpleName() + " for " + getClass().getSimpleName()
-                            + ": need public constructor (" + getClass().getSimpleName() + " page).", e);
+                            + ": need public constructor (" + getClass().getSimpleName() + " page).",
+                    e);
         }
     }
 
@@ -92,7 +92,6 @@ public abstract class BasePage {
         el.sendKeys(text);
         return this;
     }
-
 
     /**
      * Waits for element, then returns its text.
@@ -149,7 +148,7 @@ public abstract class BasePage {
 
     private void checkDriver() {
         if (driver == null) {
-          throw new IllegalStateException("Driver not found");
+            throw new IllegalStateException("Driver not found");
         }
-      }
+    }
 }
