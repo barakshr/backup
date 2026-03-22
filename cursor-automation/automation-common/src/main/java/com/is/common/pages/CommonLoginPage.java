@@ -1,53 +1,49 @@
 package com.is.common.pages;
 
-import com.is.infra.config.ConfigManager;
-import com.is.infra.selenium.BasePage;
-import com.is.infra.selenium.BrowserType;
-import com.is.infra.selenium.DriverHolder;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import com.is.infra.selenium.BasePage;
 
 /**
  * Page Object for the login screen.
  * Driver starts when this page is first used.
  */
-public class LoginPage extends BasePage {
+public class CommonLoginPage extends BasePage {
     private static final By USERNAME = By.name("username");
     private static final By PASSWORD = By.name("password");
 
-
-    public LoginPage() {
+    public CommonLoginPage() {
         super();
-
     }
 
-
-    public LoginPage(WebDriver driver) {
+    public CommonLoginPage(WebDriver driver) {
         super(driver);
     }
 
-    public LoginPage setUserName(String username) {
+    public CommonLoginPage setUserName(String username) {
         type(USERNAME, username);
         return this;
     }
 
-    public LoginPage setPassword(String password) {
+    public CommonLoginPage setPassword(String password) {
         type(PASSWORD, password);
         return this;
     }
 
-    public LoginPage signIn() {
+    public CommonLoginPage signIn() {
         return this;
+    }
+
+    public <T extends BasePage> T signIn(Class<T> nextPage) {
+        return goToPage(nextPage);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public LoginPage open(String url) {
+    public CommonLoginPage open(String url) {
         super.open(url);
         return this;
     }
 
-    
 }

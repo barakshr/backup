@@ -120,7 +120,7 @@ public abstract class BasePage {
     /**
      * Creates a page instance via reflection (no-arg constructor).
      */
-    protected <T extends BasePage> T page(Class<T> pageClass) {
+    public <T extends BasePage> T goToPage(Class<T> pageClass) {
         try {
             return pageClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
