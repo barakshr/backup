@@ -19,7 +19,8 @@ import java.util.Properties;
  * </ol>
  * Environment variables override file values on every {@link #getString(String)} read.
  * <p>
- * Mandatory keys must be present (in file or env) after merge; {@link #get()} fails fast if any are missing.
+ * Infra defines no mandatory keys. Each module calls {@link #validateKeys(List)} from its
+ * own {@code @BeforeSuite} to validate the keys it requires.
  */
 public class ConfigManager {
 
@@ -27,12 +28,6 @@ public class ConfigManager {
 
     private static final String INFRA_DEFAULTS_FILE = "infra-defaults.properties";
     private static final String MODULE_CONFIG_FILE = "config.properties";
-
-    private static final List<String> MANDATORY_KEYS = List.of(
-            "aut.base.url",
-            "browser.type",
-            "browser.headless"
-    );
 
     private static volatile ConfigManager INSTANCE;
 
@@ -60,10 +55,8 @@ public class ConfigManager {
         Properties props = new Properties();
         loadInto(props, INFRA_DEFAULTS_FILE);
         loadInto(props, MODULE_CONFIG_FILE);
-        ConfigManager cm = new ConfigManager(props);
-        cm.validateMandatoryKeys();
         log.info("ConfigManager initialized (merged {} + {})", INFRA_DEFAULTS_FILE, MODULE_CONFIG_FILE);
-        return cm;
+        return new ConfigManager(props);
     }
 
     private static void loadInto(Properties target, String fileName) {
@@ -81,9 +74,15 @@ public class ConfigManager {
         }
     }
 
-    private void validateMandatoryKeys() {
+    /**
+     * Validates that the given keys are present (in files or env vars).
+     * Call this from your module's @BeforeSuite — not from infra.
+     *
+     * @throws IllegalStateException listing all missing keys at once
+     */
+    public void validateKeys(List<String> requiredKeys) {
         List<String> missing = new ArrayList<>();
-        for (String key : MANDATORY_KEYS) {
+        for (String key : requiredKeys) {
             String value = getString(key);
             if (value == null || value.isBlank()) {
                 missing.add(key);
@@ -92,7 +91,7 @@ public class ConfigManager {
         if (!missing.isEmpty()) {
             throw new IllegalStateException(
                     "Missing mandatory config keys: " + missing
-                            + ". Set them in your module's config.properties or via the matching env vars."
+                            + ". Set them in config.properties or via the matching env vars."
             );
         }
     }

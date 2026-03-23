@@ -35,11 +35,12 @@ public class DriverFactory {
     public static WebDriver newCreate(DriverRegister driverRegister) {
         BrowserType browserType = driverRegister.getBrowserType();
         Options<?> options = driverRegister.getOptions();
-        if (browserType == BrowserType.CHROME) {
-            return new ChromeDriver((ChromeOptions) options.getOptions());
-        }
-
-        return null;
+        log.info("Creating {} driver", browserType);
+        return switch (browserType) {
+            case CHROME  -> new ChromeDriver((ChromeOptions) options.getOptions());
+            case FIREFOX -> new FirefoxDriver((org.openqa.selenium.firefox.FirefoxOptions) options.getOptions());
+            case EDGE    -> new EdgeDriver((org.openqa.selenium.edge.EdgeOptions) options.getOptions());
+        };
     }
 
     public static WebDriver create(BrowserType browserType, boolean headless) {

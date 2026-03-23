@@ -3,11 +3,16 @@ package com.is.common.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import com.is.infra.config.AppConfigHolder;
 import com.is.infra.selenium.BasePage;
 
 /**
  * Page Object for the login screen.
- * Driver starts when this page is first used.
+ * Driver is created lazily when this page is first used.
+ * <p>
+ * Call {@link #open()} to navigate to the AUT base URL supplied by the
+ * product module via {@link AppConfigHolder}. The page has no knowledge of
+ * which product module provides the URL.
  */
 public class CommonLoginPage extends BasePage {
     private static final By USERNAME = By.name("username");
@@ -19,6 +24,14 @@ public class CommonLoginPage extends BasePage {
 
     public CommonLoginPage(WebDriver driver) {
         super(driver);
+    }
+
+    /**
+     * Navigates to the AUT base URL registered by the product module.
+     */
+    public CommonLoginPage open() {
+        super.open(AppConfigHolder.getBaseUrl());
+        return this;
     }
 
     public CommonLoginPage setUserName(String username) {
@@ -38,12 +51,4 @@ public class CommonLoginPage extends BasePage {
     public <T extends BasePage> T signIn(Class<T> nextPage) {
         return goToPage(nextPage);
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public CommonLoginPage open(String url) {
-        super.open(url);
-        return this;
-    }
-
 }
