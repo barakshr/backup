@@ -29,10 +29,11 @@ public class DriverHolder {
 
     public static WebDriver getDriver() {
         WebDriver driver = DRIVER.get();
+
         if (driver == null) {
             setDriver();
         }
-        return driver;
+        return DRIVER.get();
     }
 
     private static WebDriver setDriver() {

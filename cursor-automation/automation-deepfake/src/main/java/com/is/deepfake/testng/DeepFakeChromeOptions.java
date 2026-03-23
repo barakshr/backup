@@ -8,7 +8,7 @@ public class DeepFakeChromeOptions implements Options<ChromeOptions> {
     @Override
     public ChromeOptions getOptions() {
         org.openqa.selenium.chrome.ChromeOptions options = new org.openqa.selenium.chrome.ChromeOptions();
-        options.addArguments("--headless=new");
+    
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--disable-gpu");
