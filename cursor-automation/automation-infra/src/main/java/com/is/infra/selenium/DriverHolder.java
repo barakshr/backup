@@ -8,11 +8,14 @@ import org.slf4j.LoggerFactory;
  * Thread-local holder for the current test's WebDriver.
  *
  * Driver is created lazily on first call to getDriver() — e.g. when a Page
- * Object
- * is first used. Config (browser.type, browser.headless) is read at creation
- * time.
+ * Object is first used.
  *
- * Call quitAndClear() after each test method (e.g. from SetupOrchestrator).
+ * DRIVER_REGISTER is a suite-wide static field (not ThreadLocal) so that a
+ * single call to register() from @BeforeSuite is visible to all test threads
+ * in parallel execution. The WebDriver itself remains ThreadLocal so each
+ * thread gets its own browser instance.
+ *
+ * Call quitAndClear() after each test method (e.g. from ActionOrchestrator).
  * Thread-safe: each thread has its own driver instance.
  */
 public class DriverHolder {
@@ -21,10 +24,10 @@ public class DriverHolder {
 
     private static final ThreadLocal<WebDriver> DRIVER = new ThreadLocal<>();
 
-    private static final ThreadLocal<DriverRegister> DRIVER_REGISTER = new ThreadLocal<>();
+    private static volatile DriverRegister DRIVER_REGISTER;
 
     public static void register(DriverRegister driverRegister) {
-        DRIVER_REGISTER.set(driverRegister);
+        DRIVER_REGISTER = driverRegister;
     }
 
     public static WebDriver getDriver() {
@@ -37,8 +40,8 @@ public class DriverHolder {
     }
 
     private static WebDriver setDriver() {
-        DriverRegister driverRegister = DRIVER_REGISTER.get();
-        if (DRIVER_REGISTER.get() == null) {
+        DriverRegister driverRegister = DRIVER_REGISTER;
+        if (driverRegister == null) {
             driverRegister = new DefaultChromeRegister();
         }
         WebDriver driver = DriverFactory.newCreate(driverRegister);
