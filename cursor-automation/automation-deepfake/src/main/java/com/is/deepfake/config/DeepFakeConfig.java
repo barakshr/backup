@@ -8,18 +8,9 @@ import com.is.infra.config.ConfigManager;
 import com.is.infra.selenium.BrowserType;
 import com.is.infra.selenium.Options;
 
-import java.util.List;
 
-/**
- * Typed configuration facade for the deepfake module.
- * <p>
- * Implements {@link AppConfig} so it can be registered with
- * {@code AppConfigHolder} as the cross-module config provider.
- * <p>
- * Owns the full mandatory key list for this module and validates it on first
- * access (eager singleton). If any key is missing the entire suite fails fast
- * before a browser opens or any action runs.
- */
+
+
 public class DeepFakeConfig implements AppConfig {
 
     private static final DeepFakeConfig INSTANCE = new DeepFakeConfig();
