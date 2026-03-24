@@ -1,5 +1,8 @@
 package com.is.deepfake.clients;
 
+import java.util.Map;
+
+import com.is.deepfake.config.DeepFakeConfig;
 import com.is.deepfake.dto.DemoToolCallRequest;
 import com.is.infra.config.ConfigManager;
 import com.is.infra.http.ApiResponse;
@@ -7,45 +10,37 @@ import com.is.infra.http.BaseApiClient;
 import com.is.infra.http.CookieAuthProvider;
 import com.is.infra.http.HttpClientProperties;
 
-import java.util.Map;
-
 /**
  * Client for the IronScales DemoTool API.
  * <p>
- * Auth: cookie-based (POST /auth/login → JWT in Set-Cookie → Cookie on all requests).
+ * Auth: cookie-based (POST /auth/login → JWT in Set-Cookie → Cookie on all
+ * requests).
  * Config: {@code demo.tool.*} keys via {@link ConfigManager}.
  * HTTP tuning: {@code http.*} keys via {@link HttpClientProperties}.
  * <p>
  * Endpoints:
- *   GET  /calls/status        — current call status
- *   GET  /dashboard/calls     — list all calls
- *   POST /calls/join-multiple — join a Teams meeting as a deepfake participant
- *   POST /calls/leave-call    — leave a call
- *   POST /calls/trigger-popup — trigger the deepfake popup
+ * GET /calls/status — current call status
+ * GET /dashboard/calls — list all calls
+ * POST /calls/join-multiple — join a Teams meeting as a deepfake participant
+ * POST /calls/leave-call — leave a call
+ * POST /calls/trigger-popup — trigger the deepfake popup
  */
 public class DemoToolClient extends BaseApiClient {
 
-    private static final String LOGIN_PATH         = "/auth/login";
-    private static final String CALL_STATUS_PATH   = "/calls/status";
-    private static final String DASHBOARD_PATH     = "/dashboard/calls";
-    private static final String JOIN_PATH          = "/calls/join-multiple";
-    private static final String LEAVE_PATH         = "/calls/leave-call";
+    private static final String CALL_STATUS_PATH = "/calls/status";
+    private static final String DASHBOARD_PATH = "/dashboard/calls";
+    private static final String JOIN_PATH = "/calls/join-multiple";
+    private static final String LEAVE_PATH = "/calls/leave-call";
     private static final String TRIGGER_POPUP_PATH = "/calls/trigger-popup";
 
     public DemoToolClient() {
-        this(ConfigManager.get());
-    }
-
-    private DemoToolClient(ConfigManager cfg) {
         super(
-                cfg.getRequired("demo.tool.base.url"),
+                DeepFakeConfig.get().getDemoToolBaseUrl(),
                 new CookieAuthProvider(
-                        cfg.getRequired("demo.tool.base.url") + LOGIN_PATH,
-                        cfg.getRequired("demo.tool.username"),
-                        cfg.getRequired("demo.tool.password")
-                ),
-                new HttpClientProperties()
-        );
+                        DeepFakeConfig.get().getBaseUrl(),
+                        DeepFakeConfig.get().getDemoToolUsername(),
+                        DeepFakeConfig.get().getDemoToolPassword()),
+                new HttpClientProperties());
     }
 
     /**

@@ -55,6 +55,13 @@ public class DeepFakeConfig implements AppConfig {
 
     // --- deepfake-specific ---
 
+
+    public String getDemoToolBaseUrl() {
+        return config.getRequired("demo.tool.base.url");
+    }
+
+
+
     public boolean isBrowserHeadless() {
         return config.getBoolean("browser.headless", true);
     }

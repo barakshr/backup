@@ -24,13 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DemoToolLoginTest extends DeepfakeBaseTest {
 
-    private final DemoToolClient demoToolClient = new DemoToolClient();
+  
 
-    @InfraAnnotation(cleanDatabase = true)
+   // @InfraAnnotation(cleanDatabase = true)
     @CommonAnnotation(createCompany = true)
     @DeepfakeAnnotation(createDfsTenant = true, joinTeamsMeeting = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
+        DemoToolClient demoToolClient = new DemoToolClient();
         ApiResponse response = demoToolClient.getCallStatus();
         CommonContextHolder.get().getCompany();
         DeepfakeContextHolder.get().getDfsTenant();
@@ -46,6 +47,7 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
 
     @Test(description = "DemoTool: login and verify authenticated GET /dashboard/calls returns 200")
     public void loginAndGetDashboardCalls() {
+        DemoToolClient demoToolClient = new DemoToolClient();
         ApiResponse response = demoToolClient.getDashboardCalls();
 
         assertThat(response.getStatusCode())
