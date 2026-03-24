@@ -48,9 +48,9 @@ public class CreateCompanyAction extends AbstractAction {
 
     @Override
     public void setup(Method method) {
-        log.info("Creating company for test: {}", method.getName());
-        CompanyDto company = companyWorkflow.create().build();
-        CommonContextUtil.getContext().setCompany(company);
+     log.atDebug().log("Creating company for test: {}", method.getName());
+        // CompanyDto company = companyWorkflow.create().build();
+        // CommonContextUtil.getContext().setCompany(company);
     }
 
     @Override

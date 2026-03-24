@@ -18,13 +18,15 @@ public class LoginPageTest extends DeepfakeBaseTest {
     @Test(description = "Login to DemoTool")
     @DeepfakeAnnotation(createDfsTenant = true, joinTeamsMeeting = true)
     @CommonAnnotation(createCompany = true)
-    
+
     public void login() {
         DeepFakeConfig cfg = DeepFakeConfig.get();
         new CommonLoginPage()
                 .open()
                 .setUserName(cfg.getDemoToolUsername())
                 .setPassword(cfg.getDemoToolPassword())
-                .signIn(NextPage.class);
+                .signIn(NextPage.class)
+                .clickonMe()
+                .returnToLoginPage();
     }
 }
