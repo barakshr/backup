@@ -8,8 +8,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.is.infra.config.ConfigManager;
-
 /**
  * Creates and manages WebDriver instances.
  *
@@ -32,47 +30,15 @@ public class DriverFactory {
     private DriverFactory() {
     }
 
-    public static WebDriver newCreate(DriverRegister driverRegister) {
+    public static WebDriver create(DriverRegister driverRegister) {
         BrowserType browserType = driverRegister.getBrowserType();
         Options<?> options = driverRegister.getOptions();
         log.info("Creating {} driver", browserType);
         return switch (browserType) {
-            case CHROME  -> new ChromeDriver((ChromeOptions) options.getOptions());
+            case CHROME -> new ChromeDriver((ChromeOptions) options.getOptions());
             case FIREFOX -> new FirefoxDriver((org.openqa.selenium.firefox.FirefoxOptions) options.getOptions());
-            case EDGE    -> new EdgeDriver((org.openqa.selenium.edge.EdgeOptions) options.getOptions());
+            case EDGE -> new EdgeDriver((org.openqa.selenium.edge.EdgeOptions) options.getOptions());
         };
-    }
-
-    public static WebDriver create(BrowserType browserType, boolean headless) {
-        BrowserType resolved = browserType;
-        log.info("Creating {} driver (headless={})", resolved, headless);
-        return switch (resolved) {
-            case CHROME -> headless ? new ChromeDriver(DriverOptions.headlessChrome())
-                    : new ChromeDriver(DriverOptions.headedChrome());
-            case FIREFOX -> headless ? new FirefoxDriver(DriverOptions.headlessFirefox())
-                    : new FirefoxDriver(DriverOptions.headedFirefox());
-            case EDGE -> headless ? new EdgeDriver(DriverOptions.headlessEdge())
-                    : new EdgeDriver(DriverOptions.headedEdge());
-            default -> throw new IllegalStateException("Unresolved browser type: " + resolved);
-        };
-    }
-
-    /**
-     * Creates a driver using browser.type and browser.headless from
-     * config.properties.
-     */
-    public static WebDriver create() {
-        ConfigManager config = ConfigManager.get();
-        String name = config.getString("browser.type", "chrome").toUpperCase();
-        boolean headless = config.getBoolean("browser.headless", false);
-        BrowserType type;
-        try {
-            type = BrowserType.valueOf(name);
-        } catch (IllegalArgumentException e) {
-            log.warn("Unknown browser.type '{}' in config, defaulting to CHROME", name);
-            type = BrowserType.CHROME;
-        }
-        return create(type, headless);
     }
 
     /** Null-safe driver quit. Logs but does not rethrow on error. */

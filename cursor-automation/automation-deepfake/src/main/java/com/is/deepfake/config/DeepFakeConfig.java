@@ -21,7 +21,6 @@ public class DeepFakeConfig implements AppConfig {
     private static final List<String> MANDATORY_KEYS = List.of(
             "aut.base.url",
             "browser.type",
-            "browser.headless",
             "demo.tool.username",
             "demo.tool.password"
     );
@@ -57,8 +56,12 @@ public class DeepFakeConfig implements AppConfig {
         return BrowserType.valueOf(config.getRequired("browser.type").toUpperCase());
     }
 
+    /**
+     * Optional key {@code browser.headless}. When absent or blank, defaults to {@code true}
+     * (headless). Set to {@code false} for a visible browser.
+     */
     public boolean isBrowserHeadless() {
-        return config.getBoolean("browser.headless", false);
+        return config.getBoolean("browser.headless", true);
     }
 
     public String getDemoToolUsername() {

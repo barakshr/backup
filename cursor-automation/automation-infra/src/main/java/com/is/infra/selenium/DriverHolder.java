@@ -44,7 +44,7 @@ public class DriverHolder {
         if (driverRegister == null) {
             driverRegister = new DefaultChromeRegister();
         }
-        WebDriver driver = DriverFactory.newCreate(driverRegister);
+        WebDriver driver = DriverFactory.create(driverRegister);
         DRIVER.set(driver);
         return driver;
     }
