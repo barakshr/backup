@@ -1,8 +1,12 @@
 package com.is.deepfake.config;
 
+import com.is.deepfake.testng.DeepFakeChromeOptions;
+import com.is.deepfake.testng.DeepFakeEdgeOptions;
+import com.is.deepfake.testng.DeepFakeFirefoxOptions;
 import com.is.infra.config.AppConfig;
 import com.is.infra.config.ConfigManager;
 import com.is.infra.selenium.BrowserType;
+import com.is.infra.selenium.Options;
 
 import java.util.List;
 
@@ -18,20 +22,12 @@ import java.util.List;
  */
 public class DeepFakeConfig implements AppConfig {
 
-    private static final List<String> MANDATORY_KEYS = List.of(
-            "aut.base.url",
-            "browser.type",
-            "demo.tool.username",
-            "demo.tool.password"
-    );
-
     private static final DeepFakeConfig INSTANCE = new DeepFakeConfig();
 
     private final ConfigManager config;
 
     private DeepFakeConfig() {
         this.config = ConfigManager.get();
-        config.validateKeys(MANDATORY_KEYS);
     }
 
     public static DeepFakeConfig get() {
@@ -50,16 +46,24 @@ public class DeepFakeConfig implements AppConfig {
         return config.getRequired("tenant.id");
     }
 
-    // --- deepfake-specific ---
-
+    @Override
     public BrowserType getBrowserType() {
         return BrowserType.valueOf(config.getRequired("browser.type").toUpperCase());
     }
 
-    /**
-     * Optional key {@code browser.headless}. When absent or blank, defaults to {@code true}
-     * (headless). Set to {@code false} for a visible browser.
-     */
+    @Override
+    public Options<?> getBrowserOptions() {
+        BrowserType browserType = getBrowserType();
+        return switch (browserType) {
+            case CHROME -> new DeepFakeChromeOptions();
+            case FIREFOX -> new DeepFakeFirefoxOptions();
+            case EDGE -> new DeepFakeEdgeOptions();
+        };
+    }
+
+
+    // --- deepfake-specific ---
+
     public boolean isBrowserHeadless() {
         return config.getBoolean("browser.headless", true);
     }
@@ -71,4 +75,5 @@ public class DeepFakeConfig implements AppConfig {
     public String getDemoToolPassword() {
         return config.getRequired("demo.tool.password");
     }
+
 }

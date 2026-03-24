@@ -8,6 +8,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.is.infra.config.AppConfigRegister;
+
 /**
  * Creates and manages WebDriver instances.
  *
@@ -30,9 +32,9 @@ public class DriverFactory {
     private DriverFactory() {
     }
 
-    public static WebDriver create(DriverRegister driverRegister) {
-        BrowserType browserType = driverRegister.getBrowserType();
-        Options<?> options = driverRegister.getOptions();
+    public static WebDriver create() {
+        BrowserType browserType = AppConfigRegister.getBrowserType();
+        Options<?> options = AppConfigRegister.getBrowserOptions();
         log.info("Creating {} driver", browserType);
         return switch (browserType) {
             case CHROME -> new ChromeDriver((ChromeOptions) options.getOptions());

@@ -3,7 +3,7 @@ package com.is.common.pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import com.is.infra.config.AppConfigHolder;
+import com.is.infra.config.AppConfigRegister;
 import com.is.infra.selenium.BasePage;
 
 /**
@@ -11,7 +11,7 @@ import com.is.infra.selenium.BasePage;
  * Driver is created lazily when this page is first used.
  * <p>
  * Call {@link #open()} to navigate to the AUT base URL supplied by the
- * product module via {@link AppConfigHolder}. The page has no knowledge of
+ * product module via {@link AppConfigRegister}. The page has no knowledge of
  * which product module provides the URL.
  */
 public class CommonLoginPage extends BasePage {
@@ -30,7 +30,7 @@ public class CommonLoginPage extends BasePage {
      * Navigates to the AUT base URL registered by the product module.
      */
     public CommonLoginPage open() {
-        super.open(AppConfigHolder.getBaseUrl());
+        super.open(AppConfigRegister.getBaseUrl());
         return this;
     }
 

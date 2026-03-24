@@ -1,5 +1,8 @@
 package com.is.infra.config;
 
+import com.is.infra.selenium.BrowserType;
+import com.is.infra.selenium.Options;
+
 /**
  * Suite-wide holder for the registered {@link AppConfig}.
  * <p>
@@ -10,7 +13,7 @@ package com.is.infra.config;
  * Uses a plain {@code volatile} field (not ThreadLocal) so the registration
  * performed on the suite thread is visible to all parallel test threads.
  */
-public class AppConfigHolder {
+public class AppConfigRegister {
 
     private static volatile AppConfig APP_CONFIG;
 
@@ -24,6 +27,14 @@ public class AppConfigHolder {
 
     public static String getTenantId() {
         return require().getTenantId();
+    }
+
+    public static BrowserType getBrowserType() {
+        return require().getBrowserType();
+    }
+
+    public static Options<?> getBrowserOptions() {
+        return require().getBrowserOptions();
     }
 
     private static AppConfig require() {

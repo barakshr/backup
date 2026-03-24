@@ -24,11 +24,8 @@ public class DriverHolder {
 
     private static final ThreadLocal<WebDriver> DRIVER = new ThreadLocal<>();
 
-    private static volatile DriverRegister DRIVER_REGISTER;
 
-    public static void register(DriverRegister driverRegister) {
-        DRIVER_REGISTER = driverRegister;
-    }
+
 
     public static WebDriver getDriver() {
         WebDriver driver = DRIVER.get();
@@ -40,11 +37,7 @@ public class DriverHolder {
     }
 
     private static WebDriver setDriver() {
-        DriverRegister driverRegister = DRIVER_REGISTER;
-        if (driverRegister == null) {
-            driverRegister = new DefaultChromeRegister();
-        }
-        WebDriver driver = DriverFactory.create(driverRegister);
+        WebDriver driver = DriverFactory.create();
         DRIVER.set(driver);
         return driver;
     }
