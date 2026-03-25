@@ -51,4 +51,9 @@ public class CommonLoginPage extends BasePage {
     public <T extends BasePage> T signIn(Class<T> nextPage) {
         return goToPage(nextPage);
     }
+
+
+    public CommonLoginPage getLogo() {
+        return this;
+    }
 }

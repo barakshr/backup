@@ -7,7 +7,6 @@ import com.is.deepfake.testng.DeepfakeBaseTest;
 import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
 import com.is.deepfake.testng.context.DeepfakeContextHolder;
 import com.is.infra.http.ApiResponse;
-import com.is.infra.testng.annotation.InfraAnnotation;
 import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

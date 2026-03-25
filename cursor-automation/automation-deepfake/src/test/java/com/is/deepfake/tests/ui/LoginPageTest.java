@@ -4,10 +4,13 @@ import org.testng.annotations.Test;
 
 import com.is.common.pages.CommonLoginPage;
 import com.is.common.testng.annotation.CommonAnnotation;
+import com.is.common.testng.context.CommonContextHolder;
 import com.is.deepfake.config.DeepFakeConfig;
 import com.is.deepfake.selenium.pages.NextPage;
+import com.is.deepfake.selenium.pages.assert_page.AssertLoginPage;
 import com.is.deepfake.testng.DeepfakeBaseTest;
 import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
+import com.is.deepfake.testng.context.DeepfakeContextHolder;
 
 /**
  * UI test: login via DemoTool login page.
@@ -21,12 +24,19 @@ public class LoginPageTest extends DeepfakeBaseTest {
 
     public void login() {
         DeepFakeConfig cfg = DeepFakeConfig.get();
+        DeepfakeContextHolder.get().getMeeting();
+        CommonContextHolder.get().getCompany();
         new CommonLoginPage()
+
                 .open()
                 .setUserName(cfg.getDemoToolUsername())
                 .setPassword(cfg.getDemoToolPassword())
+                .assertPage(AssertLoginPage.class)
+                .returnToPage()
                 .signIn(NextPage.class)
                 .clickonMe()
                 .returnToLoginPage();
+        ;
+
     }
 }

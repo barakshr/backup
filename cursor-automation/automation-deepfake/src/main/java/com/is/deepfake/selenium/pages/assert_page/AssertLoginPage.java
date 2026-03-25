@@ -1,4 +1,4 @@
-package com.is.common.pages.assert_page;
+package com.is.deepfake.selenium.pages.assert_page;
 
 import com.is.common.pages.CommonLoginPage;
 import com.is.infra.selenium.Assert;
@@ -10,14 +10,12 @@ import com.is.infra.selenium.Assert;
  */
 public class AssertLoginPage extends Assert<CommonLoginPage> {
 
-    /** PatternFly v5 login layout — header / title region */
-
     public AssertLoginPage(CommonLoginPage page) {
         super(page);
     }
 
     public AssertLoginPage checkLogo() {
-
+        page.getLogo();
         return this;
     }
 }
