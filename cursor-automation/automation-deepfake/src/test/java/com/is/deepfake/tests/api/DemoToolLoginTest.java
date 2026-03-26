@@ -36,16 +36,19 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
         //apiAwait(new DemoToolDashBoardlwait(demotoolclient).getResponse());
         //new DemoToolDashBoardWait(demoToolClient).waitfordashboard();
 
-        ApiResponse response = demoToolClient.getCallStatus();
+
+         demoToolClient.getCallStatus().getBodyAsObject().getPassword();
+
+      
         CommonContextHolder.get().getCompany();
         DeepfakeContextHolder.get().getDfsTenant();
 
 
-        assertThat(response.getStatusCode())
+        assertThat(demoToolClient.getCallStatus().getStatusCode())
                 .as("GET /calls/status should return 200 after successful login")
                 .isEqualTo(200);
 
-        assertThat(response.getBody())
+        assertThat(demoToolClient.getCallStatus().getBody())
                 .as("Response body should not be empty")
                 .isNotBlank();
     }

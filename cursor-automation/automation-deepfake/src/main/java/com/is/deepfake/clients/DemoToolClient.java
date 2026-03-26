@@ -1,17 +1,16 @@
 package com.is.deepfake.clients;
 
-import static org.awaitility.Awaitility.await;
-
-import java.time.Duration;
 import java.util.Map;
 
 import com.is.deepfake.config.DeepFakeConfig;
+import com.is.deepfake.dto.CallStatusResponse;
 import com.is.deepfake.dto.DemoToolCallRequest;
 import com.is.infra.config.ConfigManager;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.http.BaseApiClient;
 import com.is.infra.http.CookieAuthProvider;
 import com.is.infra.http.HttpClientProperties;
+import com.is.infra.http.TypedApiResponse;
 
 /**
  * Client for the IronScales DemoTool API.
@@ -50,8 +49,9 @@ public class DemoToolClient extends BaseApiClient {
      * Returns the status of all active calls.
      * The first call triggers lazy authentication via CookieAuthProvider.
      */
-    public ApiResponse getCallStatus() {
-        return get(CALL_STATUS_PATH);
+    public TypedApiResponse<CallStatusResponse> getCallStatus() {
+        ApiResponse response = get(CALL_STATUS_PATH);
+        return new TypedApiResponse<>(response, CallStatusResponse.class);
     }
 
     /** Returns all calls visible in the DemoTool dashboard. */
@@ -74,9 +74,9 @@ public class DemoToolClient extends BaseApiClient {
         return post(TRIGGER_POPUP_PATH, Map.of("call_id", callId));
     }
 
-    public void getDashBoard( Object xx) {
-       
-  
-        //  await().atLeast(null).pollInterval(Duration.ofSeconds(1)).until(() -> getDashboardCalls().getBody(). == 200);
+    public void getDashBoard(Object xx) {
+
+        // await().atLeast(null).pollInterval(Duration.ofSeconds(1)).until(() ->
+        // getDashboardCalls().getBody(). == 200);
     }
 }
