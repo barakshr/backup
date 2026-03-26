@@ -1,5 +1,8 @@
 package com.is.deepfake.clients;
 
+import static org.awaitility.Awaitility.await;
+
+import java.time.Duration;
 import java.util.Map;
 
 import com.is.deepfake.config.DeepFakeConfig;
@@ -69,5 +72,11 @@ public class DemoToolClient extends BaseApiClient {
     /** Triggers the deepfake popup for all participants in the meeting. */
     public ApiResponse triggerPopup(String callId) {
         return post(TRIGGER_POPUP_PATH, Map.of("call_id", callId));
+    }
+
+    public void getDashBoard( Object xx) {
+       
+  
+        //  await().atLeast(null).pollInterval(Duration.ofSeconds(1)).until(() -> getDashboardCalls().getBody(). == 200);
     }
 }

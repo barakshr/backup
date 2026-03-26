@@ -31,9 +31,15 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
         DemoToolClient demoToolClient = new DemoToolClient();
+        // demoToolClient.getCallStatus().await(()->response.getStatusCode() == 200).get
+        //demoToolClient.apiAwait()
+        //apiAwait(new DemoToolDashBoardlwait(demotoolclient).getResponse());
+        //new DemoToolDashBoardWait(demoToolClient).waitfordashboard();
+
         ApiResponse response = demoToolClient.getCallStatus();
         CommonContextHolder.get().getCompany();
         DeepfakeContextHolder.get().getDfsTenant();
+
 
         assertThat(response.getStatusCode())
                 .as("GET /calls/status should return 200 after successful login")
@@ -48,7 +54,7 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     public void loginAndGetDashboardCalls() {
         DemoToolClient demoToolClient = new DemoToolClient();
         ApiResponse response = demoToolClient.getDashboardCalls();
-
+    
         assertThat(response.getStatusCode())
                 .as("GET /dashboard/calls should return 200 after successful login")
                 .isEqualTo(200);
