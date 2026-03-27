@@ -1,5 +1,8 @@
 package com.is.infra.http;
 
+import java.time.Duration;
+import java.util.function.Supplier;
+
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -132,6 +135,157 @@ public abstract class BaseApiClient {
                 .when()
                 .patch(path);
         return new ApiResponse(response);
+    }
+
+    // ─── polling overloads ───
+
+    /**
+     * Polls GET {path} until the raw {@link ApiResponse} matches the condition.
+     */
+    protected ApiResponse get(String path, PollingCondition<ApiResponse> condition) {
+        return pollRaw(() -> get(path), condition, "GET " + path);
+    }
+
+    /**
+     * Polls GET {path}, deserializes to {@code type}, and checks the typed condition.
+     */
+    protected <T> TypedApiResponse<T> getUntil(String path, Class<T> type, PollingCondition<T> condition) {
+        return pollTyped(() -> get(path), type, condition, "GET " + path);
+    }
+
+    /**
+     * Polls POST {path} until the raw {@link ApiResponse} matches the condition.
+     */
+    protected ApiResponse post(String path, Object body, PollingCondition<ApiResponse> condition) {
+        return pollRaw(() -> post(path, body), condition, "POST " + path);
+    }
+
+    /**
+     * Polls POST {path}, deserializes to {@code type}, and checks the typed condition.
+     */
+    protected <T> TypedApiResponse<T> postUntil(String path, Object body, Class<T> type, PollingCondition<T> condition) {
+        return pollTyped(() -> post(path, body), type, condition, "POST " + path);
+    }
+
+    // ─── polling engine ───
+
+    private ApiResponse pollRaw(
+            Supplier<ApiResponse> call,
+            PollingCondition<ApiResponse> condition,
+            String description) {
+
+        long deadline = System.currentTimeMillis() + condition.getMaxWait().toMillis();
+        ApiResponse last = null;
+        Exception lastException = null;
+        int attempt = 0;
+
+        while (System.currentTimeMillis() < deadline) {
+            attempt++;
+            try {
+                last = call.get();
+                log.debug("Poll attempt {} for [{}] — status={}", attempt, description, last.getStatusCode());
+
+                if (condition.getFailWhen() != null && condition.getFailWhen().test(last)) {
+                    throw new PollingTimeoutException(
+                            String.format("Fail-fast triggered on attempt %d for [%s]. Last status=%d, body=%s",
+                                    attempt, description, last.getStatusCode(), truncate(last.getBody())),
+                            last);
+                }
+
+                if (condition.getUntil().test(last)) {
+                    log.debug("Poll condition met on attempt {} for [{}]", attempt, description);
+                    return last;
+                }
+            } catch (PollingTimeoutException e) {
+                throw e;
+            } catch (Exception e) {
+                lastException = e;
+                log.debug("Poll attempt {} for [{}] threw: {}", attempt, description, e.getMessage());
+                if (!condition.isIgnoreExceptions()) {
+                    throw new PollingTimeoutException(
+                            String.format("Exception on attempt %d for [%s]: %s",
+                                    attempt, description, e.getMessage()),
+                            last, e);
+                }
+            }
+
+            sleep(condition.getPollInterval());
+        }
+
+        String lastInfo = last != null
+                ? String.format("status=%d, body=%s", last.getStatusCode(), truncate(last.getBody()))
+                : "no successful response";
+        throw new PollingTimeoutException(
+                String.format("Condition not met within %s for [%s] after %d attempts. Last: %s",
+                        condition.getMaxWait(), description, attempt, lastInfo),
+                last, lastException);
+    }
+
+    private <T> TypedApiResponse<T> pollTyped(
+            Supplier<ApiResponse> call,
+            Class<T> type,
+            PollingCondition<T> condition,
+            String description) {
+
+        long deadline = System.currentTimeMillis() + condition.getMaxWait().toMillis();
+        ApiResponse lastRaw = null;
+        T lastObj = null;
+        Exception lastException = null;
+        int attempt = 0;
+
+        while (System.currentTimeMillis() < deadline) {
+            attempt++;
+            try {
+                lastRaw = call.get();
+                lastObj = lastRaw.as(type);
+                log.debug("Poll attempt {} for [{}] — deserialized {}", attempt, description, type.getSimpleName());
+
+                if (condition.getFailWhen() != null && condition.getFailWhen().test(lastObj)) {
+                    throw new PollingTimeoutException(
+                            String.format("Fail-fast triggered on attempt %d for [%s]. Last value: %s",
+                                    attempt, description, lastObj),
+                            lastObj);
+                }
+
+                if (condition.getUntil().test(lastObj)) {
+                    log.debug("Poll condition met on attempt {} for [{}]", attempt, description);
+                    return new TypedApiResponse<>(lastRaw, type);
+                }
+            } catch (PollingTimeoutException e) {
+                throw e;
+            } catch (Exception e) {
+                lastException = e;
+                log.debug("Poll attempt {} for [{}] threw: {}", attempt, description, e.getMessage());
+                if (!condition.isIgnoreExceptions()) {
+                    throw new PollingTimeoutException(
+                            String.format("Exception on attempt %d for [%s]: %s",
+                                    attempt, description, e.getMessage()),
+                            lastObj, e);
+                }
+            }
+
+            sleep(condition.getPollInterval());
+        }
+
+        String lastInfo = lastObj != null ? lastObj.toString() : "no successful response";
+        throw new PollingTimeoutException(
+                String.format("Condition not met within %s for [%s] after %d attempts. Last: %s",
+                        condition.getMaxWait(), description, attempt, lastInfo),
+                lastObj, lastException);
+    }
+
+    private void sleep(Duration duration) {
+        try {
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Polling interrupted", e);
+        }
+    }
+
+    private String truncate(String s) {
+        if (s == null) return "null";
+        return s.length() > 200 ? s.substring(0, 200) + "..." : s;
     }
 
     public String getBaseUrl() {

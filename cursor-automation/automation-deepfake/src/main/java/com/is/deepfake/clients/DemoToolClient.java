@@ -5,11 +5,12 @@ import java.util.Map;
 import com.is.deepfake.config.DeepFakeConfig;
 import com.is.deepfake.dto.CallStatusResponse;
 import com.is.deepfake.dto.DemoToolCallRequest;
-import com.is.infra.config.ConfigManager;
+import com.is.deepfake.dto.DemoToolCallResponse;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.http.BaseApiClient;
 import com.is.infra.http.CookieAuthProvider;
 import com.is.infra.http.HttpClientProperties;
+import com.is.infra.http.PollingCondition;
 import com.is.infra.http.TypedApiResponse;
 
 /**
@@ -17,14 +18,14 @@ import com.is.infra.http.TypedApiResponse;
  * <p>
  * Auth: cookie-based (POST /auth/login → JWT in Set-Cookie → Cookie on all
  * requests).
- * Config: {@code demo.tool.*} keys via {@link ConfigManager}.
+ * Config: {@code demo.tool.*} keys via {@link com.is.infra.config.ConfigManager}.
  * HTTP tuning: {@code http.*} keys via {@link HttpClientProperties}.
  * <p>
  * Endpoints:
- * GET /calls/status — current call status
- * GET /dashboard/calls — list all calls
+ * GET  /calls/status       — current call status
+ * GET  /dashboard/calls    — list all calls
  * POST /calls/join-multiple — join a Teams meeting as a deepfake participant
- * POST /calls/leave-call — leave a call
+ * POST /calls/leave-call   — leave a call
  * POST /calls/trigger-popup — trigger the deepfake popup
  */
 public class DemoToolClient extends BaseApiClient {
@@ -45,38 +46,45 @@ public class DemoToolClient extends BaseApiClient {
                 new HttpClientProperties());
     }
 
-    /**
-     * Returns the status of all active calls.
-     * The first call triggers lazy authentication via CookieAuthProvider.
-     */
+    // ─── call status ───
+
     public TypedApiResponse<CallStatusResponse> getCallStatus() {
-        ApiResponse response = get(CALL_STATUS_PATH);
-        return new TypedApiResponse<>(response, CallStatusResponse.class);
+        return new TypedApiResponse<>(get(CALL_STATUS_PATH), CallStatusResponse.class);
     }
 
-    /** Returns all calls visible in the DemoTool dashboard. */
+    public TypedApiResponse<CallStatusResponse> getCallStatus(PollingCondition<CallStatusResponse> condition) {
+        return getUntil(CALL_STATUS_PATH, CallStatusResponse.class, condition);
+    }
+
+    // ─── dashboard ───
+
     public ApiResponse getDashboardCalls() {
         return get(DASHBOARD_PATH);
     }
 
-    /** Joins a Teams meeting as a deepfake participant. */
+    public ApiResponse getDashboardCalls(PollingCondition<ApiResponse> condition) {
+        return get("DASHBOARD_PATH", condition);
+    }
+
+    public TypedApiResponse<DemoToolCallResponse> getDashboardCallsTyped() {
+        return new TypedApiResponse<>(get(DASHBOARD_PATH), DemoToolCallResponse.class);
+    }
+
+    public TypedApiResponse<DemoToolCallResponse> getDashboardCallsTyped(PollingCondition<DemoToolCallResponse> condition) {
+        return getUntil(DASHBOARD_PATH, DemoToolCallResponse.class, condition);
+    }
+
+    // ─── actions ───
+
     public ApiResponse joinCall(DemoToolCallRequest request) {
         return post(JOIN_PATH, request);
     }
 
-    /** Leaves an active call. */
     public ApiResponse leaveCall(String callId) {
         return post(LEAVE_PATH, Map.of("call_id", callId));
     }
 
-    /** Triggers the deepfake popup for all participants in the meeting. */
     public ApiResponse triggerPopup(String callId) {
         return post(TRIGGER_POPUP_PATH, Map.of("call_id", callId));
-    }
-
-    public void getDashBoard(Object xx) {
-
-        // await().atLeast(null).pollInterval(Duration.ofSeconds(1)).until(() ->
-        // getDashboardCalls().getBody(). == 200);
     }
 }

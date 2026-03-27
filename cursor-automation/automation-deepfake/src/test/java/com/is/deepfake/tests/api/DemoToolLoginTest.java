@@ -1,15 +1,23 @@
 package com.is.deepfake.tests.api;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Duration;
+
+import org.testng.annotations.Test;
+
 import com.is.common.testng.annotation.CommonAnnotation;
 import com.is.common.testng.context.CommonContextHolder;
+import com.is.deepfake.clients.CallStatusPoller;
+import com.is.deepfake.clients.DashboardPoller;
 import com.is.deepfake.clients.DemoToolClient;
+import com.is.deepfake.dto.CallStatusResponse;
+import com.is.deepfake.dto.DemoToolCallResponse;
 import com.is.deepfake.testng.DeepfakeBaseTest;
 import com.is.deepfake.testng.annotation.DeepfakeAnnotation;
 import com.is.deepfake.testng.context.DeepfakeContextHolder;
 import com.is.infra.http.ApiResponse;
-import org.testng.annotations.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.is.infra.http.PollingCondition;
 
 /**
  * Smoke tests for the DemoTool API.
@@ -23,26 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DemoToolLoginTest extends DeepfakeBaseTest {
 
-  
-
-   // @InfraAnnotation(cleanDatabase = true)
     @CommonAnnotation(createCompany = true)
     @DeepfakeAnnotation(createDfsTenant = true, joinTeamsMeeting = true)
     @Test(description = "DemoTool: login and verify authenticated GET /calls/status returns 200")
     public void loginAndGetCallStatus() {
         DemoToolClient demoToolClient = new DemoToolClient();
-        // demoToolClient.getCallStatus().await(()->response.getStatusCode() == 200).get
-        //demoToolClient.apiAwait()
-        //apiAwait(new DemoToolDashBoardlwait(demotoolclient).getResponse());
-        //new DemoToolDashBoardWait(demoToolClient).waitfordashboard();
 
+        demoToolClient.getCallStatus().getBodyAsObject().getPassword();
 
-         demoToolClient.getCallStatus().getBodyAsObject().getPassword();
-
-      
         CommonContextHolder.get().getCompany();
         DeepfakeContextHolder.get().getDfsTenant();
-
 
         assertThat(demoToolClient.getCallStatus().getStatusCode())
                 .as("GET /calls/status should return 200 after successful login")
@@ -57,7 +55,7 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
     public void loginAndGetDashboardCalls() {
         DemoToolClient demoToolClient = new DemoToolClient();
         ApiResponse response = demoToolClient.getDashboardCalls();
-    
+
         assertThat(response.getStatusCode())
                 .as("GET /dashboard/calls should return 200 after successful login")
                 .isEqualTo(200);
@@ -65,5 +63,57 @@ public class DemoToolLoginTest extends DeepfakeBaseTest {
         assertThat(response.getBody())
                 .as("Response body should not be empty")
                 .isNotBlank();
+    }
+
+    // ─── Polling examples ───
+
+    @Test(description = "Poll raw ApiResponse with pre-built poller")
+    public void pollDashboardUntilOk() {
+        DemoToolClient client = new DemoToolClient();
+
+        ApiResponse resp = client.getDashboardCalls(DashboardPoller.untilOk);
+        assertThat(resp.getStatusCode()).isEqualTo(200);
+    }
+
+    @Test(description = "Poll typed POJO with pre-built poller")
+    public void pollDashboardUntilActive() {
+        DemoToolClient client = new DemoToolClient();
+
+        DemoToolCallResponse data = client.getDashboardCallsTyped(DashboardPoller.untilActive)
+                .getBodyAsObject();
+        assertThat(data.getStatus()).isEqualTo("active");
+    }
+
+    @Test(description = "Poll typed POJO with custom status")
+    public void pollDashboardUntilCustomStatus() {
+        DemoToolClient client = new DemoToolClient();
+ 
+        DemoToolCallResponse data = client.getDashboardCallsTyped(DashboardPoller.untilStatus("completed"))
+                .getBodyAsObject();
+        assertThat(data.getStatus()).isEqualTo("completed");
+    }
+
+    @Test(description = "Poll call status with pre-built poller")
+    public void pollCallStatusUntilReady() {
+        DemoToolClient client = new DemoToolClient();
+
+        CallStatusResponse status = client.getCallStatus(CallStatusPoller.untilReady)
+                .getBodyAsObject();
+        assertThat(status.getPassword()).isNotBlank();
+    }
+
+    @Test(description = "Inline condition for one-off cases")
+    public void pollWithInlineCondition() {
+        DemoToolClient client = new DemoToolClient();
+
+        DemoToolCallResponse data = client.getDashboardCallsTyped(
+                PollingCondition.poll(
+                        Duration.ofSeconds(45),
+                        Duration.ofSeconds(3),
+                        (DemoToolCallResponse d) -> "special-state".equals(d.getStatus())
+                ).ignoringExceptions()
+        ).getBodyAsObject();
+
+        assertThat(data.getStatus()).isEqualTo("special-state");
     }
 }
