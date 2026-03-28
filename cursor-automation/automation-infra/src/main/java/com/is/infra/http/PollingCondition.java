@@ -11,7 +11,8 @@ import java.util.function.Predicate;
  * All polling parameters are caller-defined; the condition is always optional
  * at the client method level (overloaded methods).
  *
- * @param <T> the type the predicate operates on — either a POJO or {@link ApiResponse}
+ * @param <T> the type the predicate operates on — either a POJO or
+ *            {@link ApiResponse}
  */
 public class PollingCondition<T> {
 
@@ -30,16 +31,19 @@ public class PollingCondition<T> {
     /**
      * Creates a polling condition.
      *
-     * @param maxWait      maximum time to poll before throwing {@link PollingTimeoutException}
+     * @param maxWait      maximum time to poll before throwing
+     *                     {@link PollingTimeoutException}
      * @param pollInterval time between each poll attempt
-     * @param until        predicate that must return {@code true} for polling to succeed
+     * @param until        predicate that must return {@code true} for polling to
+     *                     succeed
      */
     public static <T> PollingCondition<T> poll(Duration maxWait, Duration pollInterval, Predicate<T> until) {
         return new PollingCondition<>(maxWait, pollInterval, until);
     }
 
     /**
-     * If the API call itself throws (connection refused, 500, deserialization error, etc.),
+     * If the API call itself throws (connection refused, 500, deserialization
+     * error, etc.),
      * swallow the exception and keep polling instead of failing immediately.
      */
     public PollingCondition<T> ignoringExceptions() {
@@ -48,7 +52,8 @@ public class PollingCondition<T> {
     }
 
     /**
-     * Abort polling immediately if this condition is detected (unrecoverable state).
+     * Abort polling immediately if this condition is detected (unrecoverable
+     * state).
      * Throws {@link PollingTimeoutException} with a "fail-fast" message.
      */
     public PollingCondition<T> failWhen(Predicate<T> failCondition) {
@@ -56,9 +61,23 @@ public class PollingCondition<T> {
         return this;
     }
 
-    public Duration getMaxWait()        { return maxWait; }
-    public Duration getPollInterval()   { return pollInterval; }
-    public Predicate<T> getUntil()      { return until; }
-    public Predicate<T> getFailWhen()   { return failWhen; }
-    public boolean isIgnoreExceptions() { return ignoreExceptions; }
+    public Duration getMaxWait() {
+        return maxWait;
+    }
+
+    public Duration getPollInterval() {
+        return pollInterval;
+    }
+
+    public Predicate<T> getUntil() {
+        return until;
+    }
+
+    public Predicate<T> getFailWhen() {
+        return failWhen;
+    }
+
+    public boolean isIgnoreExceptions() {
+        return ignoreExceptions;
+    }
 }
