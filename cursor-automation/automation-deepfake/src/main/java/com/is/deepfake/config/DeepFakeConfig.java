@@ -74,4 +74,8 @@ public class DeepFakeConfig implements AppConfig {
         return config.getRequired("demo.tool.password");
     }
 
+    public String getNotificationBotBaseUrl() {
+        return config.getRequired("notification.bot.base.url");
+    }
+
 }

@@ -1,35 +1,62 @@
 package com.is.deepfake.clients;
 
+import com.is.deepfake.config.DeepFakeConfig;
+import com.is.deepfake.dto.NotificationTriggerRequest;
+import com.is.deepfake.dto.NotificationTriggerResponse;
 import com.is.infra.http.ApiResponse;
 import com.is.infra.http.BaseApiClient;
+import com.is.infra.http.HttpClientProperties;
+import com.is.infra.http.TypedApiResponse;
 
 /**
- * Client for the IronScales Notification Bot API.
- * Stub — to be implemented when NB service tests are added (stage 2).
- *
- * The Notification Bot delivers in-meeting popup alerts to participants
- * when a deepfake is detected. It joins the Teams meeting and sends
- * messages via Microsoft Graph API.
- *
- * Service test approach:
- *   - Send a trigger request to the NB
- *   - Mock the Microsoft Graph API with WireMock
- *   - Verify the NB sent the correct request to the mock
- *
- * Auth: TBD (likely Bearer token or internal service auth)
- * TODO: convert to @Component with NotificationBotProperties when service tests are added
+ * Client for the Notification Bot API.
+ * <p>
+ * The Notification Bot receives deepfake alert triggers from the Call Server
+ * and delivers popup notifications to Teams participants via Microsoft Graph API.
+ * <p>
+ * Auth: none (internal cluster communication).
+ * Config: {@code notification.bot.base.url} via {@link DeepFakeConfig}.
  */
 public class NotificationBotClient extends BaseApiClient {
 
+    private static final String TRIGGER_PATH = "/api/v1/notifications/trigger";
+    private static final String HEALTH_PATH = "/health";
+
+    public NotificationBotClient() {
+        super(
+                DeepFakeConfig.get().getNotificationBotBaseUrl(),
+                null,
+                new HttpClientProperties());
+    }
+
+    /**
+     * Constructor that accepts an explicit base URL (useful for tests pointing to WireMock).
+     */
     public NotificationBotClient(String baseUrl) {
-        super(baseUrl, null);
+        super(baseUrl, null, new HttpClientProperties());
     }
 
     /**
      * Sends a deepfake alert trigger to the Notification Bot.
-     * TODO: implement when NB endpoint spec is available.
+     *
+     * @param request the alert details (call, participants, detected person)
+     * @return raw API response
      */
-    public ApiResponse triggerAlert(Object alertData) {
-        throw new UnsupportedOperationException("NotificationBotClient.triggerAlert() not yet implemented");
+    public ApiResponse triggerAlert(NotificationTriggerRequest request) {
+        return post(TRIGGER_PATH, request);
+    }
+
+    /**
+     * Sends a trigger and deserializes the response.
+     */
+    public TypedApiResponse<NotificationTriggerResponse> triggerAlertTyped(NotificationTriggerRequest request) {
+        return new TypedApiResponse<>(post(TRIGGER_PATH, request), NotificationTriggerResponse.class);
+    }
+
+    /**
+     * Health check endpoint.
+     */
+    public ApiResponse healthCheck() {
+        return get(HEALTH_PATH);
     }
 }

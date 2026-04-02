@@ -7,6 +7,12 @@
         </classes>
     </test>
 
+    <test name="Notification Bot Service Tests">
+        <classes>
+            <class name="com.is.deepfake.tests.api.NotificationBotServiceTest"/>
+        </classes>
+    </test>
+
     <test name="UI Tests">
         <classes>
             <class name="com.is.deepfake.tests.ui.LoginPageTest"/>

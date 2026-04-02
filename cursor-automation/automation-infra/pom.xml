@@ -87,6 +87,12 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
 
+        <!-- WireMock -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
