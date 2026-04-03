@@ -1,6 +1,7 @@
 package com.is.deepfake.tests.api;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -19,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Service-level tests for the Notification Bot.
  * <p>
- * The test acts as the Call Server: it sends a trigger request to the NB
- * and verifies the NB called the (mocked) Microsoft Graph API correctly.
+ * Parallel-safe: each test registers its own stubs, generates a unique callId
+ * (UUID), and uses it as a correlation ID in WireMock verify calls.
  * <p>
  * WireMock lifecycle is managed by {@link ServiceBaseTest}.
  */
@@ -37,42 +38,55 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
 
     @Test(description = "NB: trigger alert with valid payload -> Graph API receives correct message")
     public void triggerAlertWithValidPayload() {
-        mockServer.stub(GraphApiStubs.sendMessageSuccess());
-
-        NotificationTriggerRequest request = buildValidRequest();
+        String uniqueCallId = UUID.randomUUID().toString();
+        mockServer.stub(GraphApiStubs.sendMessageSuccess(uniqueCallId));
+        NotificationTriggerRequest request = buildRequest(uniqueCallId, "HIGH");
         ApiResponse response = nbClient.triggerAlert(request);
 
         assertThat(response.getStatusCode()).isEqualTo(200);
-
         NotificationTriggerResponse body = response.as(NotificationTriggerResponse.class);
         assertThat(body.getStatus()).isEqualTo("SENT");
         assertThat(body.getRecipientCount()).isEqualTo(1);
 
-        mockServer.verify(1, GraphApiStubs.sendMessageWasCalled());
+        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithCorrelationId(uniqueCallId));
+    }
+
+    // ─── A1b: Verify Graph request body reflects trigger fields ───
+
+    @Test(description = "NB: Graph API request body reflects trigger payload (call id, threat, participant)")
+    public void triggerAlert_graphRequestBodyReflectsTrigger() {
+        String uniqueCallId = UUID.randomUUID().toString();
+        mockServer.stub(GraphApiStubs.sendMessageSuccess(uniqueCallId));
+        NotificationTriggerRequest request = buildRequest(uniqueCallId, "HIGH");
+        ApiResponse response = nbClient.triggerAlert(request);
+
+        assertThat(response.getStatusCode()).isEqualTo(200);
+        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining(uniqueCallId));
+        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining("HIGH"));
+        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining("Alice Smith"));
     }
 
     // ─── B1: Graph API returns 401 ───
 
     @Test(description = "NB: Graph API rejects with 401 -> NB returns 502 error")
     public void graphApiReturns401_nbReturnsError() {
-        mockServer.stub(GraphApiStubs.sendMessageUnauthorized());
-
-        NotificationTriggerRequest request = buildValidRequest();
+        String uniqueCallId = UUID.randomUUID().toString();
+        mockServer.stub(GraphApiStubs.sendMessageUnauthorized(uniqueCallId));
+        NotificationTriggerRequest request = buildRequest(uniqueCallId, "HIGH");
         ApiResponse response = nbClient.triggerAlert(request);
 
         assertThat(response.getStatusCode()).isEqualTo(502);
-
-        mockServer.verify(1, GraphApiStubs.sendMessageWasCalled());
+        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithCorrelationId(uniqueCallId));
     }
 
     // ─── helpers ───
 
-    private NotificationTriggerRequest buildValidRequest() {
+    private NotificationTriggerRequest buildRequest(String callId, String threatLevel) {
         return NotificationTriggerRequest.builder()
-                .callId("call-123")
-                .tenantId("tenant-456")
+                .callId(callId)
+                .tenantId("tenant-" + UUID.randomUUID())
                 .meetingLink("https://teams.microsoft.com/l/meetup-join/test-meeting")
-                .organizerId("organizer-789")
+                .organizerId("organizer-" + UUID.randomUUID())
                 .internalParticipants(List.of(
                         NotificationParticipant.builder()
                                 .userId("user-1")
@@ -84,7 +98,7 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
                         .displayName("Fake CEO")
                         .confidence(0.95)
                         .build())
-                .threatLevel("HIGH")
+                .threatLevel(threatLevel)
                 .build();
     }
 }
