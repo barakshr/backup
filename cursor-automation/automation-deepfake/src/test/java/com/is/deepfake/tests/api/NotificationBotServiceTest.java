@@ -14,6 +14,7 @@ import com.is.deepfake.dto.NotificationTriggerResponse;
 import com.is.deepfake.mock.GraphApiStubs;
 import com.is.deepfake.testng.ServiceBaseTest;
 import com.is.infra.http.ApiResponse;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -61,9 +62,16 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
         ApiResponse response = nbClient.triggerAlert(request);
 
         assertThat(response.getStatusCode()).isEqualTo(200);
-        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining(uniqueCallId));
-        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining("HIGH"));
-        mockServer.verify(1, GraphApiStubs.sendMessageWasCalledWithBodyContaining("Alice Smith"));
+
+        List<LoggedRequest> graphRequests = mockServer.findAll(
+                GraphApiStubs.sendMessageWasCalledWithCorrelationId(uniqueCallId));
+        assertThat(graphRequests).hasSize(1);
+
+        String graphBody = graphRequests.get(0).getBodyAsString();
+        assertThat(graphBody)
+                .contains(uniqueCallId)
+                .contains("HIGH")
+                .contains("Alice Smith");
     }
 
     // ─── B1: Graph API returns 401 ───

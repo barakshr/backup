@@ -1,9 +1,12 @@
 package com.is.infra.mock;
 
+import java.util.List;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +79,14 @@ public class MockServerManager {
      */
     public void verify(RequestPatternBuilder pattern) {
         server.verify(pattern);
+    }
+
+    /**
+     * Returns all logged requests matching the given pattern.
+     * Useful for capturing a specific request's body and asserting on it with AssertJ.
+     */
+    public List<LoggedRequest> findAll(RequestPatternBuilder pattern) {
+        return server.findAll(pattern);
     }
 
     /**
