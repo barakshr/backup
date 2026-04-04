@@ -24,9 +24,11 @@ public final class GraphApiStubs {
     private GraphApiStubs() {}
 
     /**
-     * Graph API returns 201 Created.
-     * The stub only matches requests whose body contains {@code correlationId}
-     * (the unique callId for this test), so parallel tests don't collide.
+     * 
+     * "post(urlMatching(SEND_MESSAGE_PATH))" means that only when the NB do an http request to grafh api with http post and  path=/v1.0/chats/{chatId}/messages this method content  will invoked
+     * but not before  the corilationId check  "containing(correlationId)", which is for parlel testing ,
+     * so if the NB triger the same  "grafh api" endpoint in more then a single test  the method will be invoked only  when it machtes the corilationId which is genereted by the test 
+     * when the 3 cratiris passed (post + path+corilationID) then the response will be trigered  back to the NB 
      */
     public static MappingBuilder sendMessageSuccess(String correlationId) {
         return post(urlMatching(SEND_MESSAGE_PATH))
