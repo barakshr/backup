@@ -36,6 +36,7 @@
         <selenium.version>4.41.0</selenium.version>
         <wiremock.version>3.4.2</wiremock.version>
         <aspectj.version>1.9.21</aspectj.version>
+        <postgresql.version>42.7.2</postgresql.version>
 
         <!-- Plugin versions -->
         <maven.compiler.plugin.version>3.12.1</maven.compiler.plugin.version>
@@ -142,6 +143,13 @@
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
+            </dependency>
+
+            <!-- PostgreSQL JDBC driver -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
 
         </dependencies>

@@ -78,4 +78,32 @@ public class DeepFakeConfig implements AppConfig {
         return config.getRequired("notification.bot.base.url");
     }
 
+    // --- Call Server ---
+
+    public String getCallServerBaseUrl() {
+        return config.getRequired("call.server.base.url");
+    }
+
+    // --- Database ---
+
+    public String getDbHost() {
+        return config.getRequired("db.host");
+    }
+
+    public int getDbPort() {
+        return config.getInt("db.port", 5432);
+    }
+
+    public String getDbName() {
+        return config.getRequired("db.name");
+    }
+
+    public String getDbUser() {
+        return config.getRequired("db.user");
+    }
+
+    public String getDbPassword() {
+        return config.getRequired("db.password");
+    }
+
 }
