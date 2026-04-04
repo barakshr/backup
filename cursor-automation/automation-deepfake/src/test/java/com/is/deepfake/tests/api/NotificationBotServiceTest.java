@@ -71,9 +71,9 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
     // ─── A1b: Verify Graph request body reflects trigger fields ───
 
     /*
-    * In this TC we assert the  request contnet that the NB send  to the wiremock ( not what the wiremock returns)
+    * In this TC we assert the  request contnet that the NB send  to the wiremock endpoint ( not what the wiremock returns)
     * The main flow is : test->NB endpoint->wiremock endpoint-> asseration 
-    * the Body content that is send to the wiremock is importent because we want to know how the NB handle it and send it to the wiremock
+    * the Body content that is send to the NB is importent because we want to know how the NB handle it and send it to the wiremock
 
      */
     @Test(description = "NB: Graph API request body reflects trigger payload (call id, threat, participant)")
