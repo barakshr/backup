@@ -37,8 +37,8 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
 
     // ─── A1: Happy Path ───
 
-    /* In this TC we test what happens when the a NB recive a  sucess response from the graf api , then the NB   process it and return it to the client (test) so we can assert it 
-    /* The main flow is : test->NB endpoint->wiremock endpoint ->wiremock ( graf api)  response ->nb-> test ->assertation
+    /* In this TC we test what happens when the a NB recive a  sucess response from the graf api ,( then the NB   process it and return it to the client (test) so we can assert it) 
+    /* The main flow is : test->NB endpoint->wiremock endpoint ->wiremock ( graf api)  response ->NB-> test ->assertation
      * The body content we send to the NB is not that importent (only that the shcema is correct) because the response from the wiremock is alrerady predefined 
      * and it will accuer when the NB do a the http request to  the wiremock with the endpoint  wirmock ( microsoft graph api) provied to it ( gragh api swagger)
      * we alos need to know the response from the graf api client so we can predifine it in the wiremock stub
@@ -91,7 +91,7 @@ public class NotificationBotServiceTest extends ServiceBaseTest {
     }
 
     // ─── B1: Graph API returns 401 ───
-
+    //Same as test "triggerAlertWithValidPayload" but in this test we see how the NB handels an error response from the mock server 
     @Test(description = "NB: Graph API rejects with 401 -> NB returns 502 error")
     public void graphApiReturns401_nbReturnsError() {
         String uniqueCallId = UUID.randomUUID().toString();
